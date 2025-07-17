@@ -27,7 +27,7 @@
             <!-- <button class="text-gray-700 hover:text-gray-900">
               <MessageSquare class="w-6 h-6 text-gray-700" />
             </button> -->
-            <modal ref="modalRef"/>
+            <modal ref="modalRef" />
           </div>
         </div>
       </div>
@@ -94,7 +94,7 @@
     <section class="py-16 bg-white">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center mb-12">
-          <h2 class="text-3xl font-bold text-gray-900">Featured Products</h2>
+          <span class="text-3xl text-gray-900">Featured Products</span>
           <button class="text-blue-600 hover:text-blue-700 font-medium">
             View All
           </button>
@@ -105,7 +105,9 @@
             v-for="item in items"
             :key="item.pro_id"
             class="bg-white rounded-lg shadow-md overflow-hidden group hover:shadow-lg transition-shadow duration-300">
-            <router-link to="/card" class="relative">
+            <router-link
+              :to="{ path: 'card', query: { pro_id: item.pro_id } }"
+              class="relative">
               <img
                 :src="`http://localhost/ApplicationBackend/api/${item.thumbnail}`"
                 :alt="item.productName"

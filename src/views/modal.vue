@@ -229,8 +229,8 @@ async function sendMessage1() {
         method: "POST",
         headers: {
           Authorization:
-            "Bearer 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",
-          "HTTP-Referer": "https://yourdomain.com",
+            "Bearer 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",
+          "HTTP-Referer": "https://sanchos.com",
           "X-Title": "ChartBot",
           "Content-Type": "application/json",
         },
