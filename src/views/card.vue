@@ -80,7 +80,7 @@
                 @click="selectedSize = size"
                 class="py-2 px-3 text-sm border rounded transition-colors"
                 :class="
-                  selectedSize === size
+                  selectedSize == size
                     ? 'border-black bg-black text-white'
                     : 'border-gray-300 hover:border-gray-400'
                 ">
@@ -128,12 +128,13 @@
           </div>
 
           <!-- Add to Bag Button -->
-          <button
+          <!-- <button
             @click="addToBag"
             :disabled="!selectedSize || !selectedColor.name"
             class="w-full bg-black text-white py-3 px-6 rounded font-medium hover:bg-gray-800 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed">
             Add to bag
-          </button>
+          </button> -->
+          <btnOrder />
 
           <!-- Product Details Accordion -->
           <div class="space-y-2">
@@ -148,16 +149,44 @@
                 <ChevronDownIcon
                   class="w-5 h-5 transition-transform"
                   :class="
-                    openDetails.includes(detail.title) ? 'rotate-180' : ''
+                    openDetails.includes(currentProduct.product)
+                      ? 'rotate-180'
+                      : ''
                   " />
               </button>
               <div
                 v-if="openDetails.includes(detail.title)"
                 class="pb-4 text-sm text-gray-600 animate-fade-in">
-                <p v-if="detail.title === 'Description'">
-                  {{ currentProduct.description || detail.content }}
+                <p v-if="detail.title === 'product code'">
+                  <span class="font-medium"
+                    >Item code: <TagIcon class="w-5 h-5 text-gray-500"
+                  /></span>
+                  {{ currentProduct.pro_id || pro_id }} +
+                  {{ currentProduct.productName }}
                 </p>
-                <p v-else>{{ detail.content }}</p>
+                <p v-if="detail.title === 'Size & fit'">
+                  <span class="font-medium"
+                    >Size: <RulerIcon class="w-5 h-5 text-gray-500"
+                  /></span>
+                  {{ currentProduct.length }}
+                </p>
+                <p v-if="detail.title === 'Size Guide'">
+                  <!-- <span class="font-medium"
+                    >color: <CircleIcon class="w-5 h-5 text-gray-500"
+                  /></span>
+                  {{ currentProduct.color }} -->
+                  <SizeGuide />
+                </p>
+                <p v-if="detail.title === 'Category'">
+                  <span class="font-medium"
+                    >Category: <TagIcon class="w-5 h-5 text-gray-500"></TagIcon
+                  ></span>
+                  {{ currentProduct.category }} + {{ currentProduct.length }}
+                </p>
+                <p v-if="detail.title === 'Description'">
+                  {{ currentProduct.description }}
+                </p>
+                <!-- <p v-else>{{ currentProduct.description }}</p> -->
               </div>
             </div>
           </div>
@@ -229,10 +258,22 @@
 
 <script setup>
 import { ref, reactive, computed, onMounted } from "vue";
-import { ChevronDownIcon, StarIcon, HeartIcon } from "lucide-vue-next";
+import {
+  ChevronDownIcon,
+  StarIcon,
+  HeartIcon,
+  TagIcon,
+  InfoIcon,
+  RulerIcon,
+  PaletteIcon,
+  FileTextIcon,
+  CircleIcon,
+} from "lucide-vue-next";
 import { useRoute, useRouter } from "vue-router";
 import Swal from "sweetalert2";
 import navbar from "../components/navbar.vue";
+import btnOrder from "./customer_receipt.vue";
+import SizeGuide from "./Size_Guide_Modal.vue";
 
 // Route and product ID
 const route = useRoute();
@@ -280,12 +321,6 @@ const productImages = computed(() => {
     const mainImage = `${baseUrl}${currentProduct.value.thumbnail}`;
     return [mainImage, mainImage, mainImage, mainImage];
   }
-  return [
-    "https://via.placeholder.com/400x400/f3f4f6/9ca3af?text=Product+Image",
-    "https://via.placeholder.com/400x400/f3f4f6/9ca3af?text=Product+Image",
-    "https://via.placeholder.com/400x400/f3f4f6/9ca3af?text=Product+Image",
-    "https://via.placeholder.com/400x400/f3f4f6/9ca3af?text=Product+Image",
-  ];
 });
 
 // Available options
@@ -302,28 +337,25 @@ const availableColors = ref([
 // Product details accordion
 const productDetails = [
   {
-    title: "Description",
-    content:
-      "A comfortable basic t-shirt made from 100% cotton. Perfect for everyday wear and layering.",
+    title: "product code",
+    content: "",
   },
+
   {
     title: "Size & fit",
-    content:
-      "Regular fit. Model is 175cm tall and wears size M. Check our size guide for more details.",
+    content: "",
   },
   {
-    title: "Composition",
-    content: "100% Cotton. Machine washable at 30°C.",
+    title: "Category",
+    content: "",
   },
   {
-    title: "Care instructions",
-    content:
-      "Machine wash cold, tumble dry low, do not bleach, iron on low heat.",
+    title: "Size Guide",
+    content: "",
   },
   {
-    title: "More info",
-    content:
-      "Item code: AN621D00Q-A11. Available in multiple colors and sizes.",
+    title: "Description",
+    content: "",
   },
 ];
 
@@ -426,10 +458,6 @@ const toggleDetail = (title) => {
   }
 };
 
-// const increaseQuantity = () => {
-//   quantity.value++;
-// };
-
 const increaseQuantity = () => {
   if (quantity.value < currentProduct.value.stock) {
     quantity.value++;
@@ -468,14 +496,10 @@ const addToBag = () => {
 
   console.log("Added to bag:", bagItem);
 
-  // Here you would typically dispatch to a store or call an API
-  // For now, we'll just show a success message
-  // alert(`Added ${quantity.value} x ${bagItem.product} to bag!\nTotal: £${bagItem.total}`);
-
   Swal.fire({
     icon: "success",
     title: "You order successfully!!",
-    html: `You added <strong>${quantity.value}</strong> x <strong>${bagItem.product}</strong> to your bag.<br>Total: <strong>£${bagItem.total}</strong>`,
+    html: `You added <strong>${quantity.value}</strong> x <strong>${bagItem.product}</strong> to your bag.<br>Total: <strong>៛${bagItem.total}</strong>`,
     confirmButtonText: "OK",
   });
 

@@ -1,37 +1,7 @@
 <template>
   <div class="min-h-screen bg-gray-50">
     <!-- Header -->
-    <header class="bg-white shadow-sm sticky top-0 z-50">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between items-center h-16">
-          <div class="flex items-center">
-            <h1 class="text-2xl font-bold text-gray-900">ShopVue</h1>
-          </div>
-          <nav class="hidden md:flex space-x-8">
-            <a href="#" class="text-gray-700 hover:text-gray-900">Home</a>
-            <a href="#" class="text-gray-700 hover:text-gray-900">Products</a>
-            <a href="#" class="text-gray-700 hover:text-gray-900">About</a>
-            <a href="#" class="text-gray-700 hover:text-gray-900">Contact</a>
-          </nav>
-          <div class="flex items-center space-x-4">
-            <button class="text-gray-700 hover:text-gray-900">
-              <SearchIcon class="w-5 h-5" />
-            </button>
-            <button class="text-gray-700 hover:text-gray-900 relative">
-              <ShoppingCartIcon class="w-5 h-5" />
-              <span
-                class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center"
-                >{{ cartCount }}</span
-              >
-            </button>
-            <!-- <button class="text-gray-700 hover:text-gray-900">
-              <MessageSquare class="w-6 h-6 text-gray-700" />
-            </button> -->
-            <modal ref="modalRef" />
-          </div>
-        </div>
-      </div>
-    </header>
+    <navbar />
 
     <!-- Hero Carousel -->
     <section class="relative">
@@ -106,7 +76,7 @@
             :key="item.pro_id"
             class="bg-white rounded-lg shadow-md overflow-hidden group hover:shadow-lg transition-shadow duration-300">
             <router-link
-              :to="{ path: 'card', query: { pro_id: item.pro_id } }"
+              :to="{ path: 'card', query: { pro_id: item.pro_id ,name: item.category}}"
               class="relative">
               <img
                 :src="`http://localhost/ApplicationBackend/api/${item.thumbnail}`"
@@ -177,7 +147,7 @@
     </section>
 
     <!-- Featured Categories -->
-    <section class="py-16">
+    <!-- <section class="py-16">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <h2 class="text-3xl font-bold text-center text-gray-900 mb-12">
           Shop by Category
@@ -198,13 +168,14 @@
           </div>
         </div>
       </div>
-    </section>
+    </section> -->
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted, onUnmounted } from "vue";
 import modal from "../views/modal.vue";
+import navbar from "../components/navbar.vue";
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
@@ -244,23 +215,23 @@ const carouselSlides = [
   },
 ];
 
-const categories = [
-  {
-    id: 1,
-    name: "Electronics",
-    image: "/placeholder.svg?height=256&width=400",
-  },
-  {
-    id: 2,
-    name: "Fashion",
-    image: "/placeholder.svg?height=256&width=400",
-  },
-  {
-    id: 3,
-    name: "Home & Garden",
-    image: "/placeholder.svg?height=256&width=400",
-  },
-];
+// const categories = [
+//   {
+//     id: 1,
+//     name: "Electronics",
+//     image: "/placeholder.svg?height=256&width=400",
+//   },
+//   {
+//     id: 2,
+//     name: "Fashion",
+//     image: "/placeholder.svg?height=256&width=400",
+//   },
+//   {
+//     id: 3,
+//     name: "Home & Garden",
+//     image: "/placeholder.svg?height=256&width=400",
+//   },
+// ];
 
 const items = ref([]);
 onMounted(async () => {
