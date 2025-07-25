@@ -1,570 +1,328 @@
 <template>
-  <div
-    class="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center p-4">
-    <div class="max-w-md w-full space-y-8">
-      <!-- Header -->
-      <div class="text-center">
-        <div
-          class="mx-auto h-16 w-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center mb-6 shadow-lg">
-          <UserPlusIcon class="h-8 w-8 text-white" />
+  <div class="min-h-screen bg-blue-50 flex items-center justify-center p-4">
+    <div class="w-full max-w-md">
+      <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+        <!-- Header with fishing theme -->
+        <div class="bg-blue-600 p-6 text-center">
+          <img
+            src="https://cdn-icons-png.flaticon.com/512/3079/3079158.png"
+            alt="Fishing Logo"
+            class="h-16 mx-auto mb-2" />
+          <h1 class="text-2xl font-bold text-white">
+            Create Your Fishing Account
+          </h1>
+          <p class="text-blue-100">Join our angler community today!</p>
         </div>
-      </div>
 
-      <!-- Registration Form -->
-      <div class="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
-        <form @submit.prevent="handleSubmit" class="space-y-6">
-          <!-- Name Fields Row -->
+        <!-- Registration Form -->
+        <form @submit.prevent="handleSubmit" class="p-6 space-y-4">
+          <!-- Name Fields -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <!-- First Name -->
             <div>
               <label
                 for="firstName"
-                class="block text-sm font-medium text-gray-700 mb-2">
-                First Name *
+                class="block text-sm font-medium text-gray-700 mb-1">
+                First Name <span class="text-red-500">*</span>
               </label>
-              <div class="relative">
-                <div
-                  class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <UserIcon class="h-5 w-5 text-gray-400" />
-                </div>
-                <input
-                  id="firstName"
-                  v-model="form.first_name"
-                  type="text"
-                  autocomplete="first_name"
-                  required
-                  class="block w-full pl-10 pr-3 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
-                  :class="{
-                    'border-red-300 bg-red-50': errors.first_name,
-                    'border-gray-300': !errors.first_name,
-                  }"
-                  placeholder="Enter first name"
-                  @blur="validateField('firstName')"
-                  @input="clearError('firstName')" />
-              </div>
-              <p v-if="errors.first_name" class="mt-1 text-sm text-red-600">
-                {{ errors.first_name }}
-              </p>
+              <input
+                v-model="form.firstName"
+                type="text"
+                id="firstName"
+                required
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="John" />
             </div>
-
-            <!-- Last Name -->
             <div>
               <label
                 for="lastName"
-                class="block text-sm font-medium text-gray-700 mb-2">
-                Last Name *
+                class="block text-sm font-medium text-gray-700 mb-1">
+                Last Name <span class="text-red-500">*</span>
               </label>
-              <div class="relative">
-                <div
-                  class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <UserIcon class="h-5 w-5 text-gray-400" />
-                </div>
-                <input
-                  id="lastName"
-                  autocomplete="last_name"
-                  v-model="form.last_name"
-                  type="text"
-                  required
-                  class="block w-full pl-10 pr-3 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
-                  :class="{
-                    'border-red-300 bg-red-50': errors.lastName,
-                    'border-gray-300': !errors.last_name,
-                  }"
-                  placeholder="Enter last name"
-                  @blur="validateField('lastName')"
-                  @input="clearError('lastName')" />
-              </div>
-              <p v-if="errors.last_name" class="mt-1 text-sm text-red-600">
-                {{ errors.last_name }}
-              </p>
+              <input
+                v-model="form.lastName"
+                type="text"
+                id="lastName"
+                required
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Doe" />
             </div>
           </div>
 
-          <!-- Email Field -->
+          <!-- Email -->
           <div>
             <label
               for="email"
-              class="block text-sm font-medium text-gray-700 mb-2">
-              Email Address *
+              class="block text-sm font-medium text-gray-700 mb-1">
+              Email <span class="text-red-500">*</span>
             </label>
-            <div class="relative">
-              <div
-                class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <MailIcon class="h-5 w-5 text-gray-400" />
-              </div>
-              <input
-                id="email"
-                autocomplete="email"
-                v-model="form.email"
-                type="email"
-                required
-                class="block w-full pl-10 pr-3 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
-                :class="{
-                  'border-red-300 bg-red-50': errors.email,
-                  'border-gray-300': !errors.email,
-                }"
-                placeholder="Enter your email"
-                @blur="validateField('email')"
-                @input="clearError('email')" />
-            </div>
-            <p v-if="errors.email" class="mt-1 text-sm text-red-600">
-              {{ errors.email }}
-            </p>
+            <input
+              v-model="form.email"
+              type="email"
+              id="email"
+              required
+              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="john@example.com" />
           </div>
 
-          <!-- Gender Field -->
+          <!-- Phone Number -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-3">
-              Gender *
+            <label
+              for="phoneNumber"
+              class="block text-sm font-medium text-gray-700 mb-1">
+              Phone Number <span class="text-red-500">*</span>
             </label>
-            <div class="grid grid-cols-3 gap-3">
-              <label
-                v-for="gender in genderOptions"
-                :key="gender.value"
-                class="relative flex items-center justify-center p-3 border rounded-lg cursor-pointer transition-all duration-200 hover:bg-gray-50"
-                :class="{
-                  'border-blue-500 bg-blue-50 text-blue-700':
-                    form.gender === gender.value,
-                  'border-gray-300': form.gender !== gender.value,
-                }">
+
+            <div
+              class="flex rounded-md shadow-sm overflow-hidden border border-gray-300 focus-within:ring-2 focus-within:ring-blue-500">
+              <!-- Country Code -->
+              <span
+                class="inline-flex items-center px-3 bg-gray-100 text-gray-700 text-sm">
+                +855
+              </span>
+
+              <!-- Phone Number Input -->
+              <input
+                v-model="form.phoneNumber"
+                type="tel"
+                id="phoneNumber"
+                required
+                class="flex-1 px-3 py-2 focus:outline-none"
+                placeholder="123-456-789" />
+            </div>
+          </div>
+
+          <!-- Gender -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">
+              Gender
+            </label>
+            <div class="flex space-x-4">
+              <label class="inline-flex items-center">
                 <input
                   v-model="form.gender"
                   type="radio"
-                  :value="gender.value"
-                  autocomplete="gender"
-                  class="sr-only"
-                  @change="clearError('gender')" />
-                <div class="flex items-center space-x-2">
-                  <span class="text-lg">{{ gender.icon }}</span>
-                  <span class="text-sm font-medium">{{ gender.label }}</span>
-                </div>
+                  class="text-blue-600 focus:ring-blue-500"
+                  value="male" />
+                <span class="ml-2">Male</span>
+              </label>
+              <label class="inline-flex items-center">
+                <input
+                  v-model="form.gender"
+                  type="radio"
+                  class="text-blue-600 focus:ring-blue-500"
+                  value="female" />
+                <span class="ml-2">Female</span>
               </label>
             </div>
-            <p v-if="errors.gender" class="mt-1 text-sm text-red-600">
-              {{ errors.gender }}
-            </p>
           </div>
 
-          <!-- Phone Number Field -->
-          <div>
-            <label
-              for="phone"
-              class="block text-sm font-medium text-gray-700 mb-2">
-              Phone Number *
-            </label>
-            <div class="relative">
-              <div
-                class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <PhoneIcon class="h-5 w-5 text-gray-400" />
-              </div>
-              <input
-                id="phone"
-                v-model="form.phone_number"
-                autocomplete="current-phone_number"
-                type="tel"
-                required
-                class="block w-full pl-10 pr-3 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
-                :class="{
-                  'border-red-300 bg-red-50': errors.phone_number,
-                  'border-gray-300': !errors.phone_number,
-                }"
-                placeholder="Enter phone number"
-                @blur="validateField('phone')"
-                @input="clearError('phone')" />
-            </div>
-            <p v-if="errors.phone_number" class="mt-1 text-sm text-red-600">
-              {{ errors.phone_number }}
-            </p>
-          </div>
-
-          <!-- Password Field -->
+          <!-- Password -->
           <div>
             <label
               for="password"
-              class="block text-sm font-medium text-gray-700 mb-2">
-              Password *
+              class="block text-sm font-medium text-gray-700 mb-1">
+              Password <span class="text-red-500">*</span>
             </label>
             <div class="relative">
-              <div
-                class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <LockIcon class="h-5 w-5 text-gray-400" />
-              </div>
               <input
-                id="password"
                 v-model="form.password"
-                autocomplete="new-password"
+                oncut="return false"
+                oncopy="return false"
+                onpaste="return false"
+                onselect="return false"
+                onselectstart="return false"
+                oncontextmenu="return false"
                 :type="showPassword ? 'text' : 'password'"
+                id="password"
                 required
-                class="block w-full pl-10 pr-12 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
-                :class="{
-                  'border-red-300 bg-red-50': errors.password,
-                  'border-gray-300': !errors.password,
-                }"
-                placeholder="Create a password"
-                @blur="validateField('password')"
-                @input="clearError('password')" />
+                minlength="8"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 pr-10"
+                placeholder="At least 8 characters" />
+
               <button
                 type="button"
-                class="absolute inset-y-0 right-0 pr-3 flex items-center"
-                @click="togglePasswordVisibility">
-                <EyeIcon
-                  v-if="!showPassword"
-                  class="h-5 w-5 text-gray-400 hover:text-gray-600" />
-                <EyeOffIcon
-                  v-else
-                  class="h-5 w-5 text-gray-400 hover:text-gray-600" />
+                @click="showPassword = !showPassword"
+                class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                <component
+                  :is="showPassword ? EyeIcon : EyeSlashIcon"
+                  class="w-6 h-6 text-gray-500" />
               </button>
             </div>
-            <p v-if="errors.password" class="mt-1 text-sm text-red-600">
-              {{ errors.password }}
-            </p>
 
-            <!-- Password Strength Indicator -->
-            <div class="mt-2">
-              <div class="flex space-x-1">
-                <div
-                  v-for="i in 4"
-                  :key="i"
-                  class="h-1 flex-1 rounded-full transition-colors duration-200"
-                  :class="getPasswordStrengthColor(i)"></div>
-              </div>
-              <p class="text-xs text-gray-500 mt-1">
-                Password strength: {{ passwordStrengthText }}
-              </p>
-            </div>
+            <p class="text-xs text-gray-500 mt-1">
+              Must contain at least 8 characters
+            </p>
+          </div>
+
+          <!-- Confirm Password -->
+          <div class="relative">
+            <label
+              for="confirmPassword"
+              class="block text-sm font-medium text-gray-700 mb-1">
+              Confirm Password <span class="text-red-500">*</span>
+            </label>
+
+            <input
+              v-model="form.confirmPassword"
+              onpaste="return false"
+              oncut="return false"
+              oncopy="return false"
+              :type="showPassword ? 'text' : 'password'"
+              id="confirmPassword"
+              required
+              class="w-full px-3 py-2 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Re-enter your password" />
+
+            <button
+              type="button"
+              @click="showPassword = !showPassword"
+              class="absolute right-0 pr-3 top-1/2 -translate-y-1/2 h-10 flex items-center">
+              <component
+                :is="showPassword ? EyeIcon : EyeSlashIcon"
+                class="w-6 h-6 text-gray-500" />
+            </button>
+
+            <p
+              v-if="
+                form.password &&
+                form.confirmPassword &&
+                form.password !== form.confirmPassword
+              "
+              class="text-xs text-red-500 mt-1">
+              Passwords don't match
+            </p>
           </div>
 
           <!-- Terms and Conditions -->
-          <div class="flex items-start">
-            <div class="flex items-center h-5">
-              <input
-                id="terms"
-                v-model="form.acceptTerms"
-                type="checkbox"
-                class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" />
-            </div>
-            <div class="ml-3 text-sm">
-              <label for="terms" class="text-gray-700">
-                I agree to the
-                <a
-                  href="#"
-                  class="text-blue-600 hover:text-blue-500 font-medium"
-                  >Terms and Conditions</a
-                >
-                and
-                <a
-                  href="#"
-                  class="text-blue-600 hover:text-blue-500 font-medium"
-                  >Privacy Policy</a
-                >
-              </label>
-            </div>
+          <div class="flex items-center">
+            <input
+              v-model="form.agreeTerms"
+              type="checkbox"
+              id="agreeTerms"
+              required
+              class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" />
+            <label for="agreeTerms" class="ml-2 block text-sm text-gray-700">
+              I agree to the
+              <a href="#" class="text-blue-600 hover:underline"
+                >Terms of Service</a
+              >
+              and
+              <a href="#" class="text-blue-600 hover:underline"
+                >Privacy Policy</a
+              >
+            </label>
           </div>
-          <p v-if="errors.acceptTerms" class="text-sm text-red-600">
-            {{ errors.acceptTerms }}
-          </p>
 
           <!-- Submit Button -->
           <button
             type="submit"
-            :disabled="isLoading || !isFormValid"
-            class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition duration-200">
-            <div v-if="isLoading" class="flex items-center">
-              <div
-                class="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-              Creating Account...
-            </div>
-            <div v-else class="flex items-center">
-              <UserPlusIcon class="h-4 w-4 mr-2" />
-              Create Account
-            </div>
+            :disabled="isSubmitting || form.password !== form.confirmPassword"
+            class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-150 disabled:opacity-50 disabled:cursor-not-allowed">
+            <span v-if="!isSubmitting">Create Account</span>
+            <span v-else class="flex items-center justify-center">
+              <svg
+                class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24">
+                <circle
+                  class="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  stroke-width="4"></circle>
+                <path
+                  class="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Creating...
+            </span>
           </button>
 
-          <!-- Success Message -->
-          <div
-            v-if="successMessage"
-            class="bg-green-50 border border-green-200 rounded-lg p-4">
-            <div class="flex">
-              <CheckCircleIcon class="h-5 w-5 text-green-400" />
-              <div class="ml-3">
-                <p class="text-sm text-green-800">{{ successMessage }}</p>
-              </div>
-            </div>
-          </div>
-
-          <!-- Error Message -->
-          <div
-            v-if="generalError"
-            class="bg-red-50 border border-red-200 rounded-lg p-4">
-            <div class="flex">
-              <AlertCircleIcon class="h-5 w-5 text-red-400" />
-              <div class="ml-3">
-                <p class="text-sm text-red-800">{{ generalError }}</p>
-              </div>
-            </div>
-          </div>
-        </form>
-
-        <!-- Login Link -->
-        <div class="mt-6 text-center">
-          <p class="text-sm text-gray-600">
+          <!-- Login Link -->
+          <div class="text-center text-sm text-gray-600">
             Already have an account?
             <router-link
               to="/signInAcc"
-              class="font-medium text-blue-600 hover:text-blue-500 transition-colors">
-              Sign in here
+              class="text-blue-600 hover:underline font-medium">
+              Sign in
             </router-link>
-          </p>
-        </div>
+          </div>
+        </form>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
-import {
-  UserPlusIcon,
-  UserIcon,
-  MailIcon,
-  PhoneIcon,
-  LockIcon,
-  EyeIcon,
-  EyeOffIcon,
-  CheckCircleIcon,
-  AlertCircleIcon,
-} from "lucide-vue-next";
+import { ref } from "vue";
+import { EyeIcon, EyeSlashIcon } from "@heroicons/vue/24/outline";
 import { useRouter } from "vue-router";
+
 const router = useRouter();
-// Form data
-const form = ref({
-  first_name: "",
-  last_name: "",
-  email: "",
-  gender: "",
-  phone_number: "",
-  password: "",
-  acceptTerms: false,
-});
-
-// Form state
-const errors = ref({});
-const isLoading = ref(false);
 const showPassword = ref(false);
-const successMessage = ref("");
-const generalError = ref("");
+const isSubmitting = ref(false);
 
-// Gender options
-const genderOptions = [
-  { value: "male", label: "Male", icon: "👨" },
-  { value: "female", label: "Female", icon: "👩" },
-  { value: "other", label: "Other", icon: "👤" },
-];
-
-// Computed properties
-const isFormValid = computed(() => {
-  return (
-    form.value.first_name &&
-    form.value.last_name &&
-    form.value.email &&
-    form.value.gender &&
-    form.value.phone_number &&
-    form.value.password &&
-    form.value.acceptTerms &&
-    Object.keys(errors.value).length === 0
-  );
+const form = ref({
+  firstName: "",
+  lastName: "",
+  email: "",
+  countryCode: "+1",
+  phoneNumber: "",
+  gender: "male",
+  password: "",
+  confirmPassword: "",
+  agreeTerms: false,
 });
-
-const passwordStrength = computed(() => {
-  const password = form.value.password;
-  let strength = 0;
-
-  if (password.length >= 8) strength++;
-  if (/[A-Z]/.test(password)) strength++;
-  if (/[0-9]/.test(password)) strength++;
-  if (/[^A-Za-z0-9]/.test(password)) strength++;
-
-  return strength;
-});
-
-const passwordStrengthText = computed(() => {
-  const strength = passwordStrength.value;
-  if (strength === 0) return "Very Weak";
-  if (strength === 1) return "Weak";
-  if (strength === 2) return "Fair";
-  if (strength === 3) return "Good";
-  return "Strong";
-});
-
-// Validation functions
-const validateField = (fieldName) => {
-  switch (fieldName) {
-    case "first_name":
-      if (!form.value.first_name.trim()) {
-        errors.value.first_name = "First name is required";
-      } else if (form.value.first_name.trim().length < 2) {
-        errors.value.firstName = "First name must be at least 2 characters";
-      } else {
-        delete errors.value.first_name;
-      }
-      break;
-
-    case "last_name":
-      if (!form.value.last_name.trim()) {
-        errors.value.last_name = "Last name is required";
-      } else if (form.value.last_name.trim().length < 2) {
-        errors.value.last_name = "Last name must be at least 2 characters";
-      } else {
-        delete errors.value.last_name;
-      }
-      break;
-
-    case "email":
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!form.value.email) {
-        errors.value.email = "Email is required";
-      } else if (!emailRegex.test(form.value.email)) {
-        errors.value.email = "Please enter a valid email address";
-      } else {
-        delete errors.value.email;
-      }
-      break;
-
-    // case "phone_number":
-    //   const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
-    //   if (!form.value.phone) {
-    //     errors.value.phone = "Phone number is required";
-    //   } else if (
-    //       !phoneRegex.test(form.value.phone.replace(/[\s\-$$$$]/g, ""))
-    //   ) {
-    //     errors.value.phone = "Please enter a valid phone number";
-    //   } else {
-    //     delete errors.value.phone;
-    //   }
-    //   break;
-
-    case "password":
-      if (!form.value.password) {
-        errors.value.password = "Password is required";
-      } else if (form.value.password.length < 8) {
-        errors.value.password = "Password must be at least 8 characters";
-      } else {
-        delete errors.value.password;
-      }
-      break;
-  }
-};
-
-const clearError = (field) => {
-  if (errors.value[field]) {
-    delete errors.value[field];
-  }
-  generalError.value = "";
-};
-
-// Form handlers
-const togglePasswordVisibility = () => {
-  showPassword.value = !showPassword.value;
-};
-
-const getPasswordStrengthColor = (index) => {
-  const strength = passwordStrength.value;
-  if (index <= strength) {
-    if (strength === 1) return "bg-red-500";
-    if (strength === 2) return "bg-yellow-500";
-    if (strength === 3) return "bg-blue-500";
-    if (strength === 4) return "bg-green-500";
-  }
-  return "bg-gray-200";
-};
 
 const handleSubmit = async () => {
-  // Validate all fields
-  Object.keys(form.value).forEach((field) => {
-    if (field !== "acceptTerms") {
-      validateField(field);
-    }
-  });
+  if (form.value.password !== form.value.confirmPassword) return;
 
-  // Check terms acceptance
-  if (!form.value.acceptTerms) {
-    errors.value.acceptTerms = "You must accept the terms and conditions";
-  }
-
-  if (!isFormValid.value) {
-    return;
-  }
-
-  isLoading.value = true;
-  generalError.value = "";
-  successMessage.value = "";
+  isSubmitting.value = true;
 
   try {
-    isLoading.value = true;
+    // Simulate API call
+    await new Promise((resolve) => setTimeout(resolve, 1500));
 
-    const response = await fetch(
-      "http://localhost/ApplicationBackend/api/middleware/insert_api_admin_call.php",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(form.value),
-      }
-    );
-    const result = await response.json();
+    // In a real app, you would call your registration API here
+    // await registerUser(form.value);
 
-    if (response.ok || result.success) {
-      console.log(result);
-      // On success
-      successMessage.value = "Account created successfully! Welcome aboard!";
-      router.push({ name: "homePage" });
-    } else {
-      generalError.value = result.message || "Failed to create account.";
-    }
+    // Redirect after successful registration
+    router.push("/");
+
+    // Show success message
+    alert("Registration successful! Welcome to our fishing community.");
   } catch (error) {
-    generalError.value =
-      "An error occurred while creating your account. Please try again.";
+    console.error("Registration error:", error);
+    alert("Registration failed. Please try again.");
   } finally {
-    isLoading.value = false;
+    isSubmitting.value = false;
   }
 };
 </script>
 
 <style scoped>
-/* Custom focus styles */
-input:focus,
-select:focus {
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-/* Custom radio button styles */
-input[type="radio"]:checked + div {
-  background-color: rgb(239 246 255);
-  border-color: rgb(59 130 246);
-  color: rgb(29 78 216);
-}
-
-/* Smooth transitions */
-* {
-  transition-property: color, background-color, border-color,
-    text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter,
-    backdrop-filter;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 150ms;
-}
-
-/* Loading animation */
-@keyframes spin {
+/* Custom animations */
+@keyframes fadeIn {
   from {
-    transform: rotate(0deg);
+    opacity: 0;
+    transform: translateY(10px);
   }
   to {
-    transform: rotate(360deg);
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
-.animate-spin {
-  animation: spin 1s linear infinite;
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+/* Custom checkbox styling */
+input[type="checkbox"]:checked {
+  background-color: #2563eb;
+  border-color: #2563eb;
 }
 </style>

@@ -76,7 +76,10 @@
             :key="item.pro_id"
             class="bg-white rounded-lg shadow-md overflow-hidden group hover:shadow-lg transition-shadow duration-300">
             <router-link
-              :to="{ path: 'card', query: { pro_id: item.pro_id ,name: item.category}}"
+              :to="{
+                path: 'card',
+                query: { pro_id: item.pro_id, name: item.category },
+              }"
               class="relative">
               <img
                 :src="`http://localhost/ApplicationBackend/api/${item.thumbnail}`"
@@ -145,30 +148,6 @@
         </div>
       </div>
     </section>
-
-    <!-- Featured Categories -->
-    <!-- <section class="py-16">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 class="text-3xl font-bold text-center text-gray-900 mb-12">
-          Shop by Category
-        </h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div
-            v-for="category in categories"
-            :key="category.id"
-            class="relative group cursor-pointer overflow-hidden rounded-lg">
-            <img
-              :src="category.image"
-              :alt="category.name"
-              class="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300" />
-            <div
-              class="absolute inset-0 bg-black bg-opacity-30 group-hover:bg-opacity-40 transition-all flex items-center justify-center">
-              <h3 class="text-white text-2xl font-bold">{{ category.name }}</h3>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section> -->
   </div>
 </template>
 

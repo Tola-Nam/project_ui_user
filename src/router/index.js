@@ -8,6 +8,7 @@ import modal from "../views/modal.vue";
 import orderProduct from "../views/order_product.vue";
 import customer_receipt from "../views/customer_receipt.vue";
 import size_guide from "../views/Size_Guide_Modal.vue";
+import footer from "../components/footer.vue";
 const routes = [
   // { path: "/", redirect: "/registerAcc" },
   // { path: "/signInAcc", name: "signInAcc", component: SignInAcc },
@@ -22,6 +23,7 @@ const routes = [
     component: customer_receipt,
   },
   { path: "/size_guide", name: "size_guide", component: size_guide },
+  { path: "/footer", name: "footer", component: footer },
 ];
 
 const router = createRouter({

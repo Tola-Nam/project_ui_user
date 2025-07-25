@@ -64,7 +64,6 @@
             <h1 class="text-2xl font-medium text-gray-900">
               {{ currentProduct.productName }}
             </h1>
-            <!-- <h2 class="text-xl text-gray-700 mb-2">{{ currentProduct.description }}</h2> -->
             <p class="text-2xl font-semibold text-gray-900">
               ៛{{ currentProduct.price }}
             </p>
@@ -80,12 +79,16 @@
                 @click="selectedSize = size"
                 class="py-2 px-3 text-sm border rounded transition-colors"
                 :class="
-                  selectedSize == size
+                  selectedSize === size
                     ? 'border-black bg-black text-white'
                     : 'border-gray-300 hover:border-gray-400'
                 ">
                 {{ size }}
               </button>
+
+              <p class="text-sm text-gray-500 mt-2">
+                Selected Size: {{ selectedSize }}
+              </p>
             </div>
           </div>
 
@@ -127,14 +130,11 @@
             </div>
           </div>
 
-          <!-- Add to Bag Button -->
-          <!-- <button
-            @click="addToBag"
-            :disabled="!selectedSize || !selectedColor.name"
+          <button
+            @click="isOpen = true"
             class="w-full bg-black text-white py-3 px-6 rounded font-medium hover:bg-gray-800 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed">
             Add to bag
-          </button> -->
-          <btnOrder />
+          </button>
 
           <!-- Product Details Accordion -->
           <div class="space-y-2">
@@ -149,9 +149,7 @@
                 <ChevronDownIcon
                   class="w-5 h-5 transition-transform"
                   :class="
-                    openDetails.includes(currentProduct.product)
-                      ? 'rotate-180'
-                      : ''
+                    openDetails.includes(detail.title) ? 'rotate-180' : ''
                   " />
               </button>
               <div
@@ -171,10 +169,6 @@
                   {{ currentProduct.length }}
                 </p>
                 <p v-if="detail.title === 'Size Guide'">
-                  <!-- <span class="font-medium"
-                    >color: <CircleIcon class="w-5 h-5 text-gray-500"
-                  /></span>
-                  {{ currentProduct.color }} -->
                   <SizeGuide />
                 </p>
                 <p v-if="detail.title === 'Category'">
@@ -186,7 +180,6 @@
                 <p v-if="detail.title === 'Description'">
                   {{ currentProduct.description }}
                 </p>
-                <!-- <p v-else>{{ currentProduct.description }}</p> -->
               </div>
             </div>
           </div>
@@ -253,74 +246,143 @@
         </div>
       </div>
     </div>
+
+    <!-- Order Confirmation Modal -->
+    <div
+      v-if="isOpen"
+      class="fixed inset-0 bg-opacity-50 flex items-center justify-end z-50">
+      <div
+        ref="printRef"
+        class="bg-white w-full max-w-md p-6 rounded-lg shadow-lg">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-xl font-bold">Order Summary</h2>
+          <button
+            @click="isOpen = false"
+            class="text-gray-500 hover:text-gray-700">
+            ✕
+          </button>
+        </div>
+
+        <div class="space-y-4">
+          <div class="flex justify-between">
+            <span class="text-gray-600">Product:</span>
+            <span class="font-medium text-green-500 bg-green-50 rounded-lg"
+              >&emsp;{{ currentProduct.productName }} +
+              {{ currentProduct.pro_id }}&emsp;</span
+            >
+          </div>
+
+          <div class="flex justify-between">
+            <span class="text-gray-600">Size:</span>
+            <span class="font-medium">{{ selectedSize }}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-600">Price:</span>
+            <span class="font-medium text-green-500 bg-green-50 rounded"
+              >៛{{ currentProduct.price }}</span
+            >
+          </div>
+
+          <div class="flex justify-between">
+            <span class="text-gray-600">Color:</span>
+            <span class="font-medium">{{ selectedColor.name }}</span>
+          </div>
+
+          <div class="flex justify-between">
+            <span class="text-gray-600">Quantity:</span>
+            <span class="font-medium">{{ quantity }}</span>
+          </div>
+
+          <div class="border-t pt-4 flex justify-between">
+            <span class="text-gray-600">Total:</span>
+            <span class="font-bold"
+              >៛{{ currentProduct.price * quantity }}</span
+            >
+          </div>
+        </div>
+
+        <div class="mt-6 flex justify-end space-x-3">
+          <button
+            @click="isOpen = false"
+            class="px-4 py-2 border border-gray-300 rounded hover:bg-gray-100">
+            Close
+          </button>
+          <button
+            @click="confirmOrder"
+            class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+            Confirm Order
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from "vue";
+import { ref, computed, onMounted } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import {
   ChevronDownIcon,
   StarIcon,
   HeartIcon,
   TagIcon,
-  InfoIcon,
   RulerIcon,
-  PaletteIcon,
-  FileTextIcon,
-  CircleIcon,
 } from "lucide-vue-next";
-import { useRoute, useRouter } from "vue-router";
 import Swal from "sweetalert2";
 import navbar from "../components/navbar.vue";
-import btnOrder from "./customer_receipt.vue";
 import SizeGuide from "./Size_Guide_Modal.vue";
 
-// Route and product ID
+// Route and router
 const route = useRoute();
 const router = useRouter();
 const pro_id = route.query.pro_id;
 
-// Reactive data
+// Component state
+const loading = ref(false);
+const error = ref("");
+const isOpen = ref(false);
+const printRef = ref(null);
+
+// Product data
 const items = ref([]);
 const selectedImage = ref("");
-const selectedSize = ref("");
+const selectedSize = ref("M");
 const selectedColor = ref({ name: "", value: "" });
 const quantity = ref(1);
 const openDetails = ref(["Description"]);
-const loading = ref(false);
-const error = ref("");
 
 // Default product structure
 const defaultProduct = {
-  proName: "Product Name",
+  pro_id: "",
+  productName: "Product Name",
   description: "Product Description",
-  price: "0.00",
+  price: 0,
   rating: 0,
   reviewCount: 0,
   thumbnail: "",
-  images: [],
+  category: "",
+  length: "",
 };
 
 // Computed properties
 const currentProduct = computed(() => {
-  if (items.value.length > 0) {
-    return {
-      ...defaultProduct,
-      ...items.value[0],
-      rating: items.value[0].rating || 4.1,
-      reviewCount: items.value[0].reviewCount || 128,
-    };
-  }
-  return defaultProduct;
+  return items.value.length > 0
+    ? {
+        ...defaultProduct,
+        ...items.value[0],
+        rating: items.value[0].rating || 4.1,
+        reviewCount: items.value[0].reviewCount || 128,
+      }
+    : defaultProduct;
 });
 
 const productImages = computed(() => {
   const baseUrl = "http://localhost/ApplicationBackend/api/";
   if (currentProduct.value.thumbnail) {
-    // Create multiple images from thumbnail for demo
     const mainImage = `${baseUrl}${currentProduct.value.thumbnail}`;
     return [mainImage, mainImage, mainImage, mainImage];
   }
+  return [];
 });
 
 // Available options
@@ -336,27 +398,11 @@ const availableColors = ref([
 
 // Product details accordion
 const productDetails = [
-  {
-    title: "product code",
-    content: "",
-  },
-
-  {
-    title: "Size & fit",
-    content: "",
-  },
-  {
-    title: "Category",
-    content: "",
-  },
-  {
-    title: "Size Guide",
-    content: "",
-  },
-  {
-    title: "Description",
-    content: "",
-  },
+  { title: "product code", content: "" },
+  { title: "Size & fit", content: "" },
+  { title: "Category", content: "" },
+  { title: "Size Guide", content: "" },
+  { title: "Description", content: "" },
 ];
 
 // Similar items data
@@ -395,15 +441,19 @@ const similarItems = ref([
   },
 ]);
 
-// Lifecycle
+// Lifecycle hooks
 onMounted(async () => {
   await fetchProduct();
+  // Set default selections after product is loaded
+  if (productImages.value.length > 0) {
+    selectedImage.value = productImages.value[0];
+  }
+  selectedColor.value = availableColors.value[0];
 });
 
 // Methods
 const fetchProduct = async () => {
   if (!pro_id) {
-    console.error("Missing pro_id in URL");
     error.value = "Product ID is required";
     return;
   }
@@ -416,25 +466,13 @@ const fetchProduct = async () => {
       `http://localhost/ApplicationBackend/api/middleware/api_fetch_product_id.php?pro_id=${pro_id}`
     );
 
-    if (!res.ok) {
-      throw new Error(`HTTP error! status: ${res.status}`);
-    }
+    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
 
     const json = await res.json();
-    console.log("Product data:", json);
 
     if (json.status && Array.isArray(json.data) && json.data.length > 0) {
-      items.value = json.data.map((item) => ({
-        ...item,
-        isFavorite: false,
-      }));
-
-      // Set default selections
-      selectedImage.value = productImages.value[0];
-      selectedSize.value = "M";
-      selectedColor.value = availableColors.value[0];
+      items.value = json.data;
     } else {
-      console.error("Invalid product data:", json);
       error.value = "Product not found";
     }
   } catch (err) {
@@ -459,52 +497,13 @@ const toggleDetail = (title) => {
 };
 
 const increaseQuantity = () => {
-  if (quantity.value < currentProduct.value.stock) {
-    quantity.value++;
-  } else {
-    Swal.fire({
-      icon: "error",
-      title: "Stock Limit Reached",
-      text: `Only ${currentProduct.value.stock} items in stock.`,
-    });
-  }
+  quantity.value++;
 };
 
 const decreaseQuantity = () => {
   if (quantity.value > 1) {
     quantity.value--;
   }
-};
-
-const addToBag = () => {
-  if (!selectedSize.value || !selectedColor.value.name) {
-    alert("Please select size and color");
-    return;
-  }
-
-  const bagItem = {
-    id: currentProduct.value.id || pro_id,
-    product: currentProduct.value.proName,
-    description: currentProduct.value.description,
-    size: selectedSize.value,
-    color: selectedColor.value.name,
-    quantity: quantity.value,
-    price: currentProduct.value.price,
-    image: selectedImage.value,
-    total: (parseFloat(currentProduct.value.price) * quantity.value).toFixed(2),
-  };
-
-  console.log("Added to bag:", bagItem);
-
-  Swal.fire({
-    icon: "success",
-    title: "You order successfully!!",
-    html: `You added <strong>${quantity.value}</strong> x <strong>${bagItem.product}</strong> to your bag.<br>Total: <strong>៛${bagItem.total}</strong>`,
-    confirmButtonText: "OK",
-  });
-
-  // Reset quantity after adding to bag
-  quantity.value = 1;
 };
 
 const toggleFavorite = (itemId) => {
@@ -521,6 +520,17 @@ const goToProduct = (itemId) => {
 const handleImageError = (event) => {
   event.target.src =
     "https://via.placeholder.com/400x400/f3f4f6/9ca3af?text=No+Image";
+};
+
+const confirmOrder = () => {
+  Swal.fire({
+    icon: "success",
+    title: "Order Confirmed!",
+    text: `Your order for ${quantity.value} x ${currentProduct.value.productName} has been placed.`,
+    confirmButtonText: "OK",
+  });
+  isOpen.value = false;
+  quantity.value = 1;
 };
 </script>
 
