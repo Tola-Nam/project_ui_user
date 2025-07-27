@@ -1,14 +1,20 @@
 <template>
-  <header class="bg-white shadow-sm sticky top-0 z-50">
+  <header class="bg-gray-100 sticky top-0 z-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex justify-between items-center h-16">
         <!-- Logo Section -->
         <div class="flex items-center">
           <div class="flex items-center space-x-2">
-            <div
-              class="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-              <span class="text-white font-bold text-sm">SV</span>
+            <div class="relative w-8 h-8 rounded-full overflow-hidden">
+              <div
+                class="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600"></div>
+              <img
+                src="https://thumbs.dreamstime.com/b/lets-shopping-logo-design-template-shop-icon-135610500.jpg"
+                alt="Shop Logo"
+                class="absolute inset-0 w-full h-full object-cover opacity-80" />
             </div>
+            <!-- <span class="text-lg text-sm text-gray-800">Let's Shop</span> -->
+            <span class="text-lg font-bold italic text-sm text-center rainbow-animate">Let's Shop</span>
           </div>
         </div>
 
@@ -53,6 +59,7 @@
               {{ cartCount }}
             </span>
           </button>
+          <modal ref="modalRef" />
 
           <!-- Profile Dropdown -->
           <div class="relative" ref="profileDropdown">
@@ -93,15 +100,17 @@
               leave-to-class="transform opacity-0 scale-95">
               <div
                 v-if="isProfileMenuOpen"
-                class="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
+                class="fixed right-4 top-16 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
                 <!-- User Info Header -->
                 <div class="px-4 py-3 border-b border-gray-100">
                   <div class="flex items-center space-x-3">
-                    <!-- <img 
-                      :src="user.avatar || '/placeholder.svg?height=40&width=40'" 
-                      :alt="user.name"
-                      class="w-10 h-10 rounded-full object-cover"
-                    /> -->
+                    <img
+                      :src="
+                        user.avatar ||
+                        'https://www.pawlovetreats.com/cdn/shop/articles/pembroke-welsh-corgi-puppy_1000x.jpg?v=1628638716'
+                      "
+                      alt=""
+                      class="w-10 h-10 rounded-full object-cover" />
                     <div>
                       <div class="font-medium text-gray-900">
                         {{ user.name }}
@@ -144,7 +153,7 @@
                     href="#"
                     class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-200">
                     <HelpCircleIcon class="w-4 h-4 mr-3 text-gray-400" />
-                    Help & Support
+                    Change profile
                   </a>
                 </div>
 
@@ -160,8 +169,6 @@
               </div>
             </transition>
           </div>
-          <!-- Modal -->
-          <modal ref="modalRef" />
           <!-- Mobile Menu Button -->
           <button
             @click="toggleMobileMenu"
@@ -172,66 +179,42 @@
         </div>
       </div>
 
-      <!-- Mobile Navigation -->
+      <!-- Mobile Navigation (Vertical Layout) -->
       <transition
         enter-active-class="transition ease-out duration-200"
-        enter-from-class="transform opacity-0 scale-95"
-        enter-to-class="transform opacity-100 scale-100"
-        leave-active-class="transition ease-in duration-75"
-        leave-from-class="transform opacity-100 scale-100"
-        leave-to-class="transform opacity-0 scale-95">
+        enter-from-class="transform -translate-x-full"
+        enter-to-class="transform translate-x-0"
+        leave-active-class="transition ease-in duration-200"
+        leave-from-class="transform translate-x-0"
+        leave-to-class="transform -translate-x-full">
         <div
           v-if="isMobileMenuOpen"
-          class="md:hidden border-t border-gray-200 bg-white">
-          <div class="px-2 pt-2 pb-3 space-y-1">
+          class="md:hidden fixed top-16 right-0 mt-1 me-2 rounded w-48 bg-gray-600 shadow-lg z-50 overflow-hidden">
+          <div class="flex flex-col py-2">
+            <router-link
+              to="/"
+              class="flex items-center px-4 py-3 text-white hover:bg-gray-500 transition-colors duration-200">
+              <Home class="w-5 h-5 mr-3" />
+              <span class="text-sm font-medium">Home</span>
+            </router-link>
             <a
               href="#"
-              class="block px-3 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md"
-              >Home</a
-            >
+              class="flex items-center px-4 py-3 text-white hover:bg-gray-500 transition-colors duration-200">
+              <ShoppingBag class="w-5 h-5 mr-3" />
+              <span class="text-sm font-medium">Products</span>
+            </a>
             <a
               href="#"
-              class="block px-3 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md"
-              >Products</a
-            >
+              class="flex items-center px-4 py-3 text-white hover:bg-gray-500 transition-colors duration-200">
+              <Info class="w-5 h-5 mr-3" />
+              <span class="text-sm font-medium">About</span>
+            </a>
             <a
               href="#"
-              class="block px-3 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md"
-              >About</a
-            >
-            <a
-              href="#"
-              class="block px-3 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md"
-              >Contact</a
-            >
-          </div>
-
-          <!-- Mobile Profile Section -->
-          <div class="border-t border-gray-200 pt-4 pb-3">
-            <div class="ml-3">
-              <div class="text-base font-medium text-gray-800">
-                {{ user.name }}
-              </div>
-              <div class="text-sm text-gray-500">{{ user.email }}</div>
-              <!-- </div> -->
-            </div>
-            <div class="mt-3 px-2 space-y-1">
-              <a
-                href="#"
-                class="block px-3 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md"
-                >My Profile</a
-              >
-              <a
-                href="#"
-                class="block px-3 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md"
-                >Settings</a
-              >
-              <button
-                @click="handleLogout"
-                class="block w-full text-left px-3 py-2 text-red-600 hover:bg-red-50 rounded-md">
-                Sign Out
-              </button>
-            </div>
+              class="flex items-center px-4 py-3 text-white hover:bg-gray-500 transition-colors duration-200">
+              <Mail class="w-5 h-5 mr-3" />
+              <span class="text-sm font-medium">Contact</span>
+            </a>
           </div>
         </div>
       </transition>
@@ -254,9 +237,15 @@ import {
   LogOutIcon,
   MenuIcon,
   XIcon,
+  Home,
+  ShoppingBag,
+  Info,
+  Mail,
 } from "lucide-vue-next";
+
 import modal from "../views/modal.vue";
 import router from "../router";
+// import router from "../router";
 
 // Reactive data
 const isProfileMenuOpen = ref(false);
@@ -270,7 +259,8 @@ const user = ref({
   name: "John Doe",
   email: "john.doe@example.com",
   role: "Premium Member",
-  avatar: "/placeholder.svg?height=32&width=32",
+  avatar:
+    "https://www.pawlovetreats.com/cdn/shop/articles/pembroke-welsh-corgi-puppy_1000x.jpg?v=1628638716",
 });
 
 // Methods
@@ -310,6 +300,34 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
+.rainbow-animate {
+  background: linear-gradient(
+    to right,
+    #ff0000,
+    #ff8000,
+    #ffff00,
+    #00ff00,
+    #0000ff,
+    #8000ff,
+    #ff00ff,
+    #ff0000
+  );
+  background-size: 800% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: rainbow 8s linear infinite;
+}
+
+@keyframes rainbow {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 100% 50%;
+  }
+}
+
 /* Custom animations for smooth transitions */
 .transition-transform {
   transition-property: transform;

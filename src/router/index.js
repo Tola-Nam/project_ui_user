@@ -13,8 +13,8 @@ const routes = [
   // { path: "/", redirect: "/registerAcc" },
   // { path: "/signInAcc", name: "signInAcc", component: SignInAcc },
   // { path: "/registerAcc", name: "registerAcc", component: registerAcc },
-  { path: "/", name: "card", component: homePage },
-  { path: "/card", name: "homePage", component: card },
+  { path: "/", name: "homePage", component: homePage },
+  { path: "/card", name: "card", component: card },
   { path: "/modal", name: "modal", component: modal },
   { path: "/order_product", name: "orderProduct", component: orderProduct },
   {
