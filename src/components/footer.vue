@@ -1,5 +1,5 @@
 <template>
-  <footer class="bg-gray-900 text-white pt-12 pb-6 ">
+  <footer class="bg-gray-900 text-white pt-12 pb-6">
     <div class="container mx-auto px-4">
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
         <!-- About Us -->
@@ -16,7 +16,10 @@
             equipment since 2010.
           </p>
           <div class="flex space-x-4">
-            <a href="https://web.facebook.com/?ref=homescreenpwa" target="_blank" class="text-gray-400 hover:text-white transition">
+            <a
+              href="https://web.facebook.com/?ref=homescreenpwa"
+              target="_blank"
+              class="text-gray-400 hover:text-white transition">
               <svg
                 class="w-6 h-6"
                 fill="currentColor"
@@ -28,7 +31,10 @@
                   clip-rule="evenodd"></path>
               </svg>
             </a>
-            <a href="https://www.instagram.com/" target="_blank" class="text-gray-400 hover:text-white transition">
+            <a
+              href="https://www.instagram.com/"
+              target="_blank"
+              class="text-gray-400 hover:text-white transition">
               <svg
                 class="w-6 h-6"
                 fill="currentColor"
@@ -58,13 +64,15 @@
           <h3 class="text-lg font-semibold">Quick Links</h3>
           <ul class="space-y-2">
             <li>
-              <a href="#" class="text-gray-400 hover:text-white transition"
-                >Home</a
+              <router-link
+                to="/"
+                class="text-gray-400 hover:text-white transition"
+                >Home</router-link
               >
             </li>
             <li>
-              <a href="#" class="text-gray-400 hover:text-white transition"
-                >Shop</a
+              <router-link to="/" class="text-gray-400 hover:text-white transition"
+                >Shop</router-link
               >
             </li>
             <li>
@@ -177,15 +185,15 @@
             <p class="text-gray-400 text-sm mb-3">
               Get updates on new products and special offers
             </p>
-            <form class="flex">
+            <form class="flex border-0">
               <input
                 type="email"
                 placeholder="Your email address"
-                class="px-3 py-2 bg-gray-800 text-white rounded-l focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
+                class="px-3 py-2 bg-gray-800 shadow-none text-white rounded-l focus:outline-none w-full"
                 required />
               <button
                 type="submit"
-                class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-r focus:outline-none focus:ring-2 focus:ring-blue-500">
+                class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-r focus:outline-none​​​ shadow-none">
                 Subscribe
               </button>
             </form>

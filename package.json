@@ -19,7 +19,8 @@
     "vue-router": "^4.5.1"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "^6.0.0",
-    "vite": "^7.0.4"
+    "@vitejs/plugin-vue": "^6.0.1",
+    "vite": "^7.0.4",
+    "vite-plugin-mkcert": "^1.17.8"
   }
 }

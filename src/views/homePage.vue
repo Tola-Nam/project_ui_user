@@ -79,16 +79,15 @@
           </button>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Responsive grid - 2 cards on mobile, 4 on desktop -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
           <div
             v-for="item in items"
             :key="item.pro_id"
             class="relative bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 flex flex-col h-full"
           >
             <!-- Favorite Button -->
-            <div
-              class="absolute top-3 right-3 flex flex-col space-y-2 z-50"
-            >
+            <div class="absolute top-3 right-3 flex flex-col space-y-2 z-50">
               <button
                 @click.stop="toggleFavorite(item.pro_id)"
                 class="w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-gray-100"
@@ -105,7 +104,7 @@
               </button>
             </div>
 
-            <!-- Product Image with Overlays -->
+            <!-- Product Image -->
             <router-link
               :to="{
                 path: 'card',
@@ -113,10 +112,7 @@
               }"
               class="relative block overflow-hidden flex-grow"
             >
-              <!-- Main Product Image -->
-              <div
-                class="w-full overflow-hidden relative bg-gray-100 flex items-center justify-center"
-              >
+              <div class="w-full overflow-hidden relative bg-gray-100 flex items-center justify-center aspect-square">
                 <img
                   :src="`http://localhost/ApplicationBackend/api/${item.thumbnail}`"
                   :alt="item.productName"
@@ -128,11 +124,8 @@
 
             <!-- Product Info -->
             <div class="p-4 flex flex-col flex-grow">
-              <div class="mb-4 max-w-full md:max-w-xs font-roboto">
-                <h3
-                  class="text-md text-gray-900 mb-1 truncate"
-                  :title="item.productName"
-                >
+              <div class="mb-2 max-w-full font-roboto">
+                <h3 class="text-sm sm:text-md text-gray-900 mb-1 line-clamp-2">
                   {{ item.productName }}
                 </h3>
                 <p class="text-xs text-gray-500 uppercase tracking-wide">
@@ -141,15 +134,13 @@
               </div>
 
               <!-- Rating and Color -->
-              <div
-                class="flex items-center space-x-4 mb-3 text-gray-500 text-xs"
-              >
+              <div class="flex items-center space-x-2 mb-2 text-gray-500 text-xs">
                 <!-- Stars -->
                 <div class="flex items-center space-x-0.5">
                   <StarIcon
                     v-for="star in 5"
                     :key="star"
-                    class="w-4 h-4"
+                    class="w-3 h-3 sm:w-4 sm:h-4"
                     :class="
                       star <= item.rating
                         ? 'text-yellow-400 fill-current'
@@ -160,40 +151,30 @@
 
                 <!-- Viewers -->
                 <div class="flex items-center space-x-1">
-                  <span class="text-red-500">{{ item.product_viewers || 0 }}</span>
-                  <EyeIcon class="w-4 h-4" />
+                  <span class="text-red-500 text-xs">{{ item.product_viewers || 0 }}</span>
+                  <EyeIcon class="w-3 h-3 sm:w-4 sm:h-4" />
                 </div>
-
-                <!-- Color -->
-                <span
-                  v-if="item.color"
-                  class="ml-auto italic lowercase tracking-wide text-green-600"
-                >
-                  • {{ item.color }}
-                </span>
               </div>
 
               <!-- Price and Add to Cart -->
-              <div
-                class="mt-auto flex items-center justify-between"
-              >
+              <div class="mt-auto flex items-center justify-between">
                 <div>
-                  <span class="text-lg font-bold text-gray-900"
-                    >${{ item.price }}</span
-                  >
+                  <span class="text-sm sm:text-lg font-bold text-gray-900">
+                    ៛{{ item.price }}
+                  </span>
                   <span
                     v-if="item.originalPrice"
-                    class="ml-2 text-sm text-gray-400 line-through"
+                    class="ml-1 sm:ml-2 text-xs sm:text-sm text-gray-400 line-through"
                   >
-                    ${{ item.originalPrice }}
+                    ៛{{ item.originalPrice }}
                   </span>
                 </div>
                 <button
                   @click.stop="addToCart(item)"
-                  class="w-9 h-9 bg-gray-900 text-white rounded-full flex items-center justify-center hover:bg-gray-800 transition-colors"
+                  class="w-7 h-7 sm:w-9 sm:h-9 bg-gray-900 text-white rounded-full flex items-center justify-center hover:bg-gray-800 transition-colors"
                   aria-label="Add to Cart"
                 >
-                  <ShoppingCartIcon class="w-4 h-4" />
+                  <ShoppingCartIcon class="w-3 h-3 sm:w-4 sm:h-4" />
                 </button>
               </div>
             </div>
@@ -206,43 +187,31 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted } from "vue";
-import modal from "../views/modal.vue";
 import navbar from "../components/navbar.vue";
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
-  SearchIcon,
   HeartIcon,
   ShoppingCartIcon,
   StarIcon,
   EyeIcon,
-  MessageSquare,
 } from "lucide-vue-next";
-
-const modalRef = ref();
-
-function showModal() {
-  modalRef.value?.openModal();
-}
 
 const carouselSlides = [
   {
-    image:
-      "https://cdn3.f-cdn.com/contestentries/989673/19886472/58e193907df0d_thumb900.jpg",
+    image: "https://cdn3.f-cdn.com/contestentries/989673/19886472/58e193907df0d_thumb900.jpg",
     title: "Summer Collection",
     description: "Discover our latest summer styles with up to 50% off",
     buttonText: "Shop Now",
   },
   {
-    image:
-      "https://cdn5.f-cdn.com/contestentries/989673/19886472/58e1b3f96b8e3_thumb900.jpg",
+    image: "https://cdn5.f-cdn.com/contestentries/989673/19886472/58e1b3f96b8e3_thumb900.jpg",
     title: "New Arrivals",
     description: "Fresh styles just landed - be the first to shop",
     buttonText: "Explore",
   },
   {
-    image:
-      "https://cdn3.f-cdn.com/contestentries/989673/19886472/58e193907df0d_thumb900.jpg",
+    image: "https://cdn3.f-cdn.com/contestentries/989673/19886472/58e193907df0d_thumb900.jpg",
     title: "Best Sellers",
     description: "Shop our most popular items loved by customers",
     buttonText: "View All",
@@ -250,6 +219,11 @@ const carouselSlides = [
 ];
 
 const items = ref([]);
+const currentSlide = ref(0);
+const cartCount = ref(0);
+let carouselInterval = null;
+
+// Fetch products
 onMounted(async () => {
   try {
     const res = await fetch(
@@ -264,13 +238,10 @@ onMounted(async () => {
   } catch (err) {
     console.error("Fetch error:", err);
   }
+  startCarousel();
 });
 
-const currentSlide = ref(0);
-const cartCount = ref(3);
-const email = ref("");
-let carouselInterval = null;
-
+// Carousel controls
 const nextSlide = () => {
   currentSlide.value = (currentSlide.value + 1) % carouselSlides.length;
 };
@@ -290,6 +261,7 @@ const stopCarousel = () => {
   if (carouselInterval) clearInterval(carouselInterval);
 };
 
+// Product actions
 const addToCart = (product) => {
   cartCount.value++;
   console.log("Added to cart:", product.productName);
@@ -297,17 +269,29 @@ const addToCart = (product) => {
 
 const toggleFavorite = (itemId) => {
   const item = items.value.find((item) => item.pro_id === itemId);
-
   if (item) {
     item.isFavorite = !item.isFavorite;
   }
 };
 
-onMounted(startCarousel);
-onUnmounted(stopCarousel);
-
-// Optional: handle broken image fallback
+// Image error handling
 const handleImageError = (event) => {
-  event.target.src = "/placeholder-image.png"; // change to your fallback image path
+  event.target.src = "/placeholder-image.png";
 };
+
+onUnmounted(stopCarousel);
 </script>
+
+<style scoped>
+/* Additional responsive styles */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.aspect-square {
+  aspect-ratio: 1/1;
+}
+</style>

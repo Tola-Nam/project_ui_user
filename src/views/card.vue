@@ -550,7 +550,7 @@ export default {
 
     const handleImageError = (event) => {
       event.target.src =
-        "https://via.placeholder.com/400x400/f3f4f6/9ca3af?text=No+Image";
+        "http://via.placeholder.com/400x400/f3f4f6/9ca3af?text=No+Image";
     };
 
     const confirmOrder = () => {
