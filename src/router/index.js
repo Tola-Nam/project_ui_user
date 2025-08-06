@@ -1,7 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
 
-import SignInAcc from "../views/signInAcc.vue";
-import registerAcc from "../views/registerAcc.vue";
 import card from "../views/card.vue";
 import homePage from "../views/homePage.vue";
 import modal from "../views/modal.vue";
@@ -9,10 +7,12 @@ import orderProduct from "../views/order_product.vue";
 import customer_receipt from "../views/customer_receipt.vue";
 import size_guide from "../views/Size_Guide_Modal.vue";
 import footer from "../components/footer.vue";
+import Registration from "../views/mod/Registration_user.vue";
+import AuthView from "../views/mod/AuthView.vue";
+import check_out from "/src/views/mod/AuthModal.vue"; // Assuming you have a check_out.vue file
+import categories from "../views/categories/cate_demo.vue";
+import category_detail from "../views/categories/cate_detail.vue";
 const routes = [
-  // { path: "/", redirect: "/registerAcc" },
-  // { path: "/signInAcc", name: "signInAcc", component: SignInAcc },
-  // { path: "/registerAcc", name: "registerAcc", component: registerAcc },
   { path: "/", name: "homePage", component: homePage },
   { path: "/card", name: "card", component: card },
   { path: "/modal", name: "modal", component: modal },
@@ -22,7 +22,16 @@ const routes = [
     name: "customer_receipt",
     component: customer_receipt,
   },
+  { path: "/Registration", name: "Registration", component: Registration },
+  { path: "/AuthView", name: "AuthView", component: AuthView },
+  { path: "/check_out", name: "check_out", component: check_out },
   { path: "/size_guide", name: "size_guide", component: size_guide },
+  { path: "/categories", name: "categories", component: categories },
+  {
+    path: "/category_detail",
+    name: "category-detail",
+    component: category_detail,
+  },
   { path: "/footer", name: "footer", component: footer },
 ];
 

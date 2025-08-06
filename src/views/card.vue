@@ -1,6 +1,7 @@
 <template>
   <div class="min-h-screen bg-white">
     <navbar />
+
     <!-- Loading State -->
     <div v-if="loading" class="flex justify-center items-center min-h-screen">
       <div
@@ -65,7 +66,7 @@
               {{ currentProduct.productName }}
             </h1>
             <p class="text-2xl font-semibold text-gray-900">
-              ៛{{ currentProduct.price }}
+              ៛{{ formatPrice(currentProduct.price) }}
             </p>
           </div>
 
@@ -85,11 +86,10 @@
                 ">
                 {{ size }}
               </button>
-
-              <p class="text-sm text-gray-500 mt-2">
-                Selected Size: {{ selectedSize }}
-              </p>
             </div>
+            <p class="text-sm text-gray-500 mt-2">
+              Selected Size: {{ selectedSize }}
+            </p>
           </div>
 
           <!-- Color Selection -->
@@ -131,8 +131,8 @@
           </div>
 
           <button
-            @click="isOpen = true"
-            class="w-full bg-black text-white py-3 px-6 rounded font-medium hover:bg-gray-800 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed">
+            @click="handleAddToCart"
+            class="w-full bg-black text-white py-3 px-6 rounded font-medium hover:bg-gray-800 transition-colors">
             Add to bag
           </button>
 
@@ -155,25 +155,19 @@
               <div
                 v-if="openDetails.includes(detail.title)"
                 class="pb-4 text-sm text-gray-600 animate-fade-in">
-                <p v-if="detail.title === 'product code'">
-                  <span class="font-medium"
-                    >Item code: <TagIcon class="w-5 h-5 text-gray-500"
-                  /></span>
-                  {{ currentProduct.pro_id }} - {{ currentProduct.productName }}
+                <p v-if="detail.title === 'Product Code'">
+                  <span class="font-medium">Item code:</span>
+                  {{ currentProduct.pro_id }} + {{ currentProduct.productName }}
                 </p>
-                <p v-if="detail.title === 'Size & fit'">
-                  <span class="font-medium"
-                    >Size: <RulerIcon class="w-5 h-5 text-gray-500"
-                  /></span>
+                <p v-if="detail.title === 'Size & Fit'">
+                  <span class="font-medium">Size:</span>
                   {{ currentProduct.length || "Not specified" }}
                 </p>
                 <p v-if="detail.title === 'Size Guide'">
                   <SizeGuide />
                 </p>
                 <p v-if="detail.title === 'Category'">
-                  <span class="font-medium"
-                    >Category: <TagIcon class="w-5 h-5 text-gray-500"></TagIcon
-                  ></span>
+                  <span class="font-medium">Category:</span>
                   {{ currentProduct.category || "Not specified" }}
                 </p>
                 <p v-if="detail.title === 'Description'">
@@ -201,7 +195,7 @@
                 >{{ currentProduct.rating }}/5</span
               >
               <span class="text-sm text-gray-500"
-                >({{ currentProduct.reviewCount }} reviews)</span
+                >({{ currentProduct.reviewCount || 0 }} reviews)</span
               >
             </div>
             <button class="text-sm text-blue-600 hover:underline">
@@ -212,32 +206,33 @@
       </div>
 
       <!-- Similar Items Section -->
-      <div class="mt-16 px-4">
+      <div class="mt-16">
         <h2 class="text-2xl mb-6 text-gray-800">You Might Also Like</h2>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
           <div
-            v-for="item in items"
-            :key="item.pro_id"
-            class="group cursor-pointer transition-all duration-300 hover:-translate-y-1">
+            v-for="product in similarProducts"
+            :key="product.pro_id"
+            class="group cursor-pointer transition-all duration-300 hover:-translate-y-1"
+            @click="goToProduct(product.pro_id)">
             <div class="relative">
               <!-- Product Image -->
               <div
                 class="aspect-square bg-gray-50 rounded-xl overflow-hidden mb-3 shadow-sm">
                 <img
-                  :src="`http://localhost/ApplicationBackend/api/${item.thumbnail}`"
-                  :alt="item.productName"
+                  :src="getImageUrl(product.thumbnail)"
+                  :alt="product.productName"
                   class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                   @error="handleImageError" />
               </div>
 
               <!-- Favorite Button -->
               <button
-                @click.stop="toggleFavorite(item.pro_id)"
+                @click.stop="toggleFavorite(product.pro_id)"
                 class="absolute top-3 right-3 w-9 h-9 bg-white/90 rounded-full flex items-center justify-center shadow-md hover:bg-gray-100 transition-colors">
                 <HeartIcon
                   class="w-4 h-4 transition-colors"
                   :class="
-                    item.isFavorite
+                    product.isFavorite
                       ? 'fill-red-500 text-red-500'
                       : 'text-gray-500 group-hover:text-red-400'
                   " />
@@ -247,27 +242,23 @@
             <!-- Product Info -->
             <div class="px-1 py-2">
               <h3 class="text-sm font-semibold text-gray-900 line-clamp-1">
-                {{ item.productName }}
+                {{ product.productName }}
               </h3>
               <div class="flex items-center justify-between mb-2">
-                <p class="text-xs text-gray-500 mb-1">{{ item.category }}</p>
+                <p class="text-xs text-gray-500">{{ product.category }}</p>
                 <span class="text-xs text-gray-500 flex items-center">
-                  {{ item.product_viewers || "no viewers" }}
-                  <Eye class="w-3 h-3 ml-1 text-gray-500" />
+                  {{ product.product_viewers || 0 }}
+                  <EyeIcon class="w-3 h-3 ml-1 text-gray-500" />
                 </span>
-
-                <button
-                  @click="goToProduct(item.pro_id)"
-                  class="text-xs text-blue-600 hover:underline">
-                  View Details
-                </button>
               </div>
               <div class="flex items-center justify-between">
-                <p class="text-sm font-bold text-gray-900">៛{{ item.price }}</p>
+                <p class="text-sm font-bold text-gray-900">
+                  ៛{{ formatPrice(product.price) }}
+                </p>
                 <div class="flex items-center">
                   <StarIcon class="w-3 h-3 text-yellow-400 fill-current" />
                   <span class="text-xs text-gray-500 ml-1">{{
-                    item.rating || "4.5"
+                    product.rating || "4.5"
                   }}</span>
                 </div>
               </div>
@@ -277,70 +268,103 @@
       </div>
     </div>
 
+    <!-- Authentication Required Modal -->
+    <div
+      v-if="showAuthModal"
+      class="fixed inset-0 bg-opacity-100 shadow-lg flex items-center justify-center z-50">
+      <div class="bg-white shadow-lg rounded-lg p-6 w-full max-w-md">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="text-lg text-center text-gray-800">
+            Login Required to check out items
+          </h3>
+          <button
+            @click="showAuthModal = false"
+            class="text-gray-500 hover:text-gray-700">
+            &times;
+          </button>
+        </div>
+        <p class="mb-6 text-sm text-gray-600 text-center">
+          You need to login or register to add items to your cart.
+        </p>
+        <div class="flex space-x-3">
+          <button
+            @click="goToLogin"
+            class="flex-1 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+            Login
+          </button>
+          <button
+            @click="goToRegister"
+            class="flex-1 py-2 border border-gray-300 rounded hover:bg-gray-100">
+            Register
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- Order Confirmation Modal -->
     <div
-      v-if="isOpen"
-      class="fixed inset-0 bg-opacity-50 flex items-center justify-end z-50">
-      <div
-        ref="printRef"
-        class="bg-white w-full max-w-md p-6 rounded-lg shadow-lg mx-4">
+      v-if="showCartModal"
+      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div class="bg-white w-full max-w-md p-6 rounded-lg shadow-lg mx-4">
         <div class="flex justify-between items-center mb-4">
-          <h2 class="text-xl font-bold">Order Summary</h2>
+          <h2 class="text-xl font-bold">Added to Cart</h2>
           <button
-            @click="isOpen = false"
+            @click="showCartModal = false"
             class="text-gray-500 hover:text-gray-700">
             ✕
           </button>
         </div>
 
         <div class="space-y-4">
-          <div class="flex justify-between">
-            <span class="text-gray-600">Product:</span>
-            <span class="font-medium text-green-500 bg-green-50 rounded-lg"
-              >&emsp;{{ currentProduct.productName }} +
-              {{ currentProduct.pro_id }}&emsp;</span
-            >
+          <div class="flex items-center space-x-4">
+            <div class="w-20 h-20 bg-gray-100 rounded overflow-hidden">
+              <img
+                :src="selectedImage"
+                :alt="currentProduct.productName"
+                class="w-full h-full object-cover" />
+            </div>
+            <div>
+              <h3 class="font-medium">{{ currentProduct.productName }}</h3>
+              <p class="text-sm text-gray-600">
+                {{ selectedSize }} | {{ selectedColor.name }}
+              </p>
+              <p class="text-sm font-medium">
+                ៛{{ formatPrice(currentProduct.price * quantity) }}
+              </p>
+            </div>
           </div>
 
-          <div class="flex justify-between">
-            <span class="text-gray-600">Size:</span>
-            <span class="font-medium">{{ selectedSize }}</span>
-          </div>
-          <div class="flex justify-between">
-            <span class="text-gray-600">Price:</span>
-            <span class="font-medium text-green-500 bg-green-50 rounded"
-              >៛{{ currentProduct.price }}</span
-            >
-          </div>
-
-          <div class="flex justify-between">
-            <span class="text-gray-600">Color:</span>
-            <span class="font-medium">{{ selectedColor.name }}</span>
-          </div>
-
-          <div class="flex justify-between">
-            <span class="text-gray-600">Quantity:</span>
-            <span class="font-medium">{{ quantity }}</span>
+          <div class="border-t pt-4">
+            <div class="flex justify-between mb-2">
+              <span class="text-gray-600">Subtotal</span>
+              <span class="font-medium"
+                >៛{{ formatPrice(currentProduct.price * quantity) }}</span
+              >
+            </div>
+            <div class="flex justify-between">
+              <span class="text-gray-600">Shipping</span>
+              <span class="font-medium">Free</span>
+            </div>
           </div>
 
           <div class="border-t pt-4 flex justify-between">
-            <span class="text-gray-600">Total:</span>
+            <span class="text-gray-600">Total</span>
             <span class="font-bold"
-              >៛{{ currentProduct.price * quantity }}</span
+              >៛{{ formatPrice(currentProduct.price * quantity) }}</span
             >
           </div>
         </div>
 
-        <div class="mt-6 flex justify-end space-x-3">
+        <div class="mt-6 flex flex-col space-y-3">
           <button
-            @click="isOpen = false"
-            class="px-4 py-2 border border-gray-300 rounded hover:bg-gray-100">
-            Close
+            @click="goToCart"
+            class="w-full py-2 bg-black text-white rounded hover:bg-gray-800">
+            View Cart
           </button>
           <button
-            @click="confirmOrder"
-            class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-            Confirm Order
+            @click="continueShopping"
+            class="w-full py-2 border border-gray-300 rounded hover:bg-gray-100">
+            Continue Shopping
           </button>
         </div>
       </div>
@@ -351,14 +375,7 @@
 <script>
 import { ref, computed, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import {
-  ChevronDownIcon,
-  StarIcon,
-  HeartIcon,
-  TagIcon,
-  RulerIcon,
-  EyeIcon,
-} from "lucide-vue-next";
+import { ChevronDownIcon, StarIcon, HeartIcon, EyeIcon } from "lucide-vue-next";
 import Swal from "sweetalert2";
 import navbar from "../components/navbar.vue";
 import SizeGuide from "./Size_Guide_Modal.vue";
@@ -369,63 +386,30 @@ export default {
     ChevronDownIcon,
     StarIcon,
     HeartIcon,
-    TagIcon,
-    RulerIcon,
+    EyeIcon,
     SizeGuide,
   },
   setup() {
-    // Route and router
     const route = useRoute();
     const router = useRouter();
     const pro_id = route.query.pro_id;
+    const category = route.query.category;
 
     // Component state
     const loading = ref(true);
     const error = ref("");
-    const isOpen = ref(false);
-    const printRef = ref(null);
+    const showCartModal = ref(false);
+    const showAuthModal = ref(false);
+    const isLoggedIn = ref(false);
 
     // Product data
-    const items = ref([]);
+    const currentProduct = ref({});
+    const similarProducts = ref([]);
     const selectedImage = ref("");
     const selectedSize = ref("M");
-    const selectedColor = ref({ name: "", value: "" });
+    const selectedColor = ref({ name: "Black", value: "#000000" });
     const quantity = ref(1);
     const openDetails = ref(["Description"]);
-    const similarItems = ref([]);
-
-    // Default product structure
-    const defaultProduct = {
-      pro_id: "",
-      productName: "Product Name",
-      description: "Product Description",
-      price: 0,
-      rating: 4.1,
-      reviewCount: 128,
-      thumbnail: "",
-      category: "",
-      length: "",
-    };
-
-    // Computed properties
-    const currentProduct = computed(() => {
-      return items.value.length > 0
-        ? {
-            ...defaultProduct,
-            ...items.value[0],
-          }
-        : defaultProduct;
-    });
-
-    const productImages = computed(() => {
-      if (currentProduct.value.thumbnail) {
-        const mainImage = `http://localhost/ApplicationBackend/api/${currentProduct.value.thumbnail}`;
-        return [mainImage, mainImage, mainImage, mainImage];
-      }
-      return [
-        "https://via.placeholder.com/600x600/f3f4f6/9ca3af?text=No+Image",
-      ];
-    });
 
     // Available options
     const availableSizes = ref(["XS", "S", "M", "L", "XL", "XXL"]);
@@ -434,86 +418,146 @@ export default {
       { name: "Black", value: "#000000" },
       { name: "Navy", value: "#1F2937" },
       { name: "Gray", value: "#6B7280" },
-      { name: "Pink", value: "#EC4899" },
-      { name: "Yellow", value: "#F59E0B" },
     ]);
 
-    // Product details accordion
     const productDetails = [
-      { title: "product code", content: "" },
-      { title: "Size & fit", content: "" },
-      { title: "Category", content: "" },
-      { title: "Size Guide", content: "" },
-      { title: "Description", content: "" },
+      { title: "Product Code" },
+      { title: "Size & Fit" },
+      { title: "Size Guide" },
+      { title: "Category" },
+      { title: "Description" },
     ];
 
-    // Similar items data
-
-    onMounted(async () => {
-      const category = route.query.category;
-
-      if (!category) {
-        console.error("Missing category in URL");
-        loading.value = false;
-        return;
+    const productImages = computed(() => {
+      if (currentProduct.value.thumbnail) {
+        const mainImage = getImageUrl(currentProduct.value.thumbnail);
+        return [mainImage, mainImage, mainImage, mainImage];
       }
-
-      try {
-        const res = await fetch(
-          `http://localhost/ApplicationBackend/api/middleware/api_fecth_category.php?category=${category}`
-        );
-        const json = await res.json();
-
-        if (json.status && Array.isArray(json.data)) {
-          items.value = json.data.map((item) => ({
-            ...item,
-            isFavorite: false,
-          }));
-        } else {
-          console.error("Expected array in data, got:", json);
-        }
-      } catch (err) {
-        console.error("Fetch error:", err);
-      } finally {
-        loading.value = false;
-      }
+      return [
+        "https://via.placeholder.com/600x600/f3f4f6/9ca3af?text=No+Image",
+      ];
     });
 
-    // Methods
+    const formatPrice = (price) => {
+      return price?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") || "0";
+    };
+
+    const getImageUrl = (thumbnail) => {
+      return `http://localhost/ApplicationBackend/api/${thumbnail}`;
+    };
+
     const fetchProduct = async () => {
-      if (!pro_id) {
-        error.value = "Product ID is required";
-        loading.value = false;
-        return;
-      }
-
-      loading.value = true;
-      error.value = "";
-
       try {
-        const res = await fetch(
+        loading.value = true;
+        const response = await fetch(
           `http://localhost/ApplicationBackend/api/middleware/api_fetch_product_id.php?pro_id=${pro_id}`
         );
 
-        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+        if (!response.ok) throw new Error("Failed to fetch product");
 
-        const json = await res.json();
+        const data = await response.json();
 
-        if (json.status && Array.isArray(json.data) && json.data.length > 0) {
-          items.value = json.data;
-          // Set default selections after product is loaded
-          if (productImages.value.length > 0) {
-            selectedImage.value = productImages.value[0];
-          }
-          selectedColor.value = availableColors.value[0];
+        if (data.status && data.data && data.data.length > 0) {
+          currentProduct.value = data.data[0];
+          selectedImage.value = productImages.value[0];
         } else {
-          error.value = "Product not found";
+          throw new Error("Product not found");
         }
       } catch (err) {
-        console.error("Fetch error:", err);
-        error.value = "Failed to load product data";
+        error.value = err.message;
       } finally {
         loading.value = false;
+      }
+    };
+
+    const fetchSimilarProducts = async () => {
+      try {
+        if (!category) return;
+
+        const response = await fetch(
+          `http://localhost/ApplicationBackend/api/middleware/api_fecth_category.php?category=${category}`
+        );
+        const data = await response.json();
+
+        if (data.status && data.data) {
+          similarProducts.value = data.data
+            .filter((product) => product.pro_id !== pro_id)
+            .map((product) => ({
+              ...product,
+              isFavorite: false,
+            }));
+        }
+      } catch (err) {
+        console.error("Failed to fetch similar products:", err);
+      }
+    };
+
+    const checkAuthStatus = async () => {
+      try {
+        const response = await fetch(
+          "http://localhost/ApplicationBackend/api/middleware/check_auth.php",
+          {
+            credentials: "include",
+          }
+        );
+        const data = await response.json();
+        isLoggedIn.value = data.authenticated;
+        return data.authenticated;
+      } catch (error) {
+        console.error("Auth check failed:", error);
+        isLoggedIn.value = false;
+        return false;
+      }
+    };
+
+    const handleAddToCart = async () => {
+      const isAuthenticated = await checkAuthStatus();
+
+      if (!isAuthenticated) {
+        showAuthModal.value = true;
+        return;
+      }
+
+      await addToCart();
+    };
+
+    const addToCart = async () => {
+      try {
+        const response = await fetch(
+          "http://localhost/ApplicationBackend/api/middleware/add_to_cart.php",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            credentials: "include",
+            body: JSON.stringify({
+              product_id: currentProduct.value.pro_id,
+              quantity: quantity.value,
+              size: selectedSize.value,
+              color: selectedColor.value.name,
+            }),
+          }
+        );
+
+        const result = await response.json();
+
+        if (result.success) {
+          showCartModal.value = true;
+        } else {
+          Swal.fire({
+            icon: "error",
+            title: "Failed to add to cart",
+            text: result.message || "Please try again",
+          });
+        }
+      } catch (error) {
+        console.error("Cart error:", error);
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "Failed to add item to cart",
+        });
       }
     };
 
@@ -527,7 +571,16 @@ export default {
     };
 
     const increaseQuantity = () => {
-      quantity.value++;
+      if (quantity.value < (currentProduct.value.stock || 10)) {
+        quantity.value++;
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Out of Stock",
+          text: "This item is currently out of stock.",
+          confirmButtonText: "OK",
+        });
+      }
     };
 
     const decreaseQuantity = () => {
@@ -536,56 +589,71 @@ export default {
       }
     };
 
-    const toggleFavorite = (itemId) => {
-      const item = items.value.find((item) => item.pro_id === itemId);
-
-      if (item) {
-        item.isFavorite = !item.isFavorite;
+    const toggleFavorite = (productId) => {
+      const product = similarProducts.value.find((p) => p.pro_id === productId);
+      if (product) {
+        product.isFavorite = !product.isFavorite;
       }
     };
 
-    const goToProduct = (itemId) => {
-      router.push({ path: "/product", query: { pro_id: itemId } });
+    const goToProduct = (productId) => {
+      router.push({
+        path: "/product",
+        query: {
+          pro_id: productId,
+          category: category,
+        },
+      });
+    };
+
+    const goToLogin = () => {
+      router.push("/AuthView");
+      showAuthModal.value = false;
+    };
+
+    const goToRegister = () => {
+      router.push("/Registration");
+      showAuthModal.value = false;
+    };
+
+    const goToCart = () => {
+      router.push("/check_out");
+      showCartModal.value = false;
+    };
+
+    const continueShopping = () => {
+      showCartModal.value = false;
     };
 
     const handleImageError = (event) => {
       event.target.src =
-        "http://via.placeholder.com/400x400/f3f4f6/9ca3af?text=No+Image";
-    };
-
-    const confirmOrder = () => {
-      Swal.fire({
-        icon: "success",
-        title: "Order Confirmed!",
-        text: `Your order for ${quantity.value} x ${currentProduct.value.productName} has been placed.`,
-        confirmButtonText: "OK",
-      });
-      isOpen.value = false;
-      quantity.value = 1;
+        "https://via.placeholder.com/400x400/f3f4f6/9ca3af?text=No+Image";
     };
 
     onMounted(() => {
       fetchProduct();
+      fetchSimilarProducts();
+      checkAuthStatus();
     });
 
     return {
       loading,
       error,
-      isOpen,
-      printRef,
-      items,
+      showCartModal,
+      showAuthModal,
+      currentProduct,
+      similarProducts,
       selectedImage,
       selectedSize,
       selectedColor,
       quantity,
       openDetails,
-      currentProduct,
-      productImages,
       availableSizes,
       availableColors,
       productDetails,
-      similarItems,
-      pro_id,
+      productImages,
+      formatPrice,
+      getImageUrl,
       fetchProduct,
       toggleDetail,
       increaseQuantity,
@@ -593,7 +661,11 @@ export default {
       toggleFavorite,
       goToProduct,
       handleImageError,
-      confirmOrder,
+      handleAddToCart,
+      goToCart,
+      continueShopping,
+      goToLogin,
+      goToRegister,
     };
   },
 };
@@ -617,5 +689,16 @@ export default {
 
 .rotate-180 {
   transform: rotate(180deg);
+}
+
+.line-clamp-1 {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.aspect-square {
+  aspect-ratio: 1/1;
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <header class="bg-gray-100 sticky top-0 z-50">
+  <header class="bg-gray-50 sticky top-0 z-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex justify-between items-center h-16">
         <!-- Logo Section -->
@@ -13,8 +13,7 @@
                 alt="Shop Logo"
                 class="absolute inset-0 w-full h-full object-cover opacity-80" />
             </div>
-            <span
-              class="text-lg font-bold italic text-sm text-center rainbow-animate"
+            <span class="text-sm font-bold italic text-center rainbow-animate"
               >Let's Shop</span
             >
           </div>
@@ -28,17 +27,37 @@
             >Home</router-link
           >
           <router-link
-            to="/products"
+            to="/categories"
             class="text-gray-700 hover:text-gray-900 transition-colors duration-200"
             >Products</router-link
           >
+
+          <div class="relative group inline-block">
+            <router-link
+              to="/"
+              class="text-gray-700 hover:text-gray-900 transition-colors duration-200"
+              >Categories</router-link
+            >
+            <div
+              class="absolute left-0 mt-2 w-80 bg-white text-gray-700 shadow-lg opacity-0 group-hover:opacity-100 invisible group-hover:visible transition-all duration-300 z-50">
+              <router-link
+                v-for="category in categories"
+                :key="category.id"
+                :to="`/category_detail/?category=${category.name}`"
+                @click="isMobileMenuOpen = false"
+                class="block px-3 py-2 text-sm text-gray-700 text-center hover:bg-gray-300 transition-colors duration-200">
+                {{ category.name }}
+              </router-link>
+            </div>
+          </div>
+
           <router-link
-            to="/about"
+            to="/"
             class="text-gray-700 hover:text-gray-900 transition-colors duration-200"
             >About</router-link
           >
           <router-link
-            to="/contact"
+            to="/"
             class="text-gray-700 hover:text-gray-900 transition-colors duration-200"
             >Contact</router-link
           >
@@ -52,16 +71,6 @@
             <SearchIcon class="w-5 h-5" />
           </button>
 
-          <!-- Shopping Cart -->
-          <button
-            class="text-gray-700 hover:text-gray-900 relative p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200">
-            <ShoppingCartIcon class="w-5 h-5" />
-            <span
-              class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center animate-pulse">
-              {{ cartCount }}
-            </span>
-          </button>
-
           <!-- Profile Dropdown -->
           <div class="relative" ref="profileDropdown">
             <button
@@ -70,7 +79,7 @@
               <!-- Avatar with Online Status -->
               <div class="relative">
                 <img
-                  :src="user.avatar || '/placeholder.svg?height=32&width=32'"
+                  :src="user.avatar || defaultAvatar"
                   :alt="user.name"
                   class="w-8 h-8 rounded-full object-cover border-2 border-gray-200" />
                 <div
@@ -84,9 +93,9 @@
               <!-- Username and Role -->
               <div class="hidden sm:block text-left">
                 <div class="text-sm font-medium text-gray-900">
-                  {{ user.name }}
+                  {{ user.First_name }} {{ user.last_name }}
                 </div>
-                <div class="text-xs text-gray-500">{{ user.role }}</div>
+                <div class="text-xs text-gray-500">{{ user.phone_number }}</div>
               </div>
 
               <!-- Dropdown Arrow -->
@@ -105,51 +114,50 @@
               leave-to-class="transform opacity-0 scale-95">
               <div
                 v-if="isProfileMenuOpen"
-                class="fixed right-4 top-16 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
+                class="fixed right-4 top-16 w-64 h-75 ps-5 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
                 <!-- User Info Header -->
-                <div class="px-4 py-3 border-b border-gray-100">
+                <div class="px-4 py-3 relative overflow-hidden">
+                  <div
+                    class="absolute bottom-0 left-0 h-0.5 w-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 animate-[flow_3s_linear_infinite]"></div>
+
                   <div class="flex items-center space-x-3">
                     <img
-                      :src="
-                        user.avatar ||
-                        'https://www.pawlovetreats.com/cdn/shop/articles/pembroke-welsh-corgi-puppy_1000x.jpg?v=1628638716'
-                      "
+                      :src="user.avatar || defaultAvatar"
                       :alt="user.name"
                       class="w-10 h-10 rounded-full object-cover" />
                     <div>
-                      <div class="font-medium text-gray-900">
-                        {{ user.name }}
+                      <div class="font-sm m-0 text-gray-900">
+                        {{ user.First_name }} {{ user.last_name }}
                       </div>
-                      <div class="text-sm text-gray-500">{{ user.email }}</div>
                       <div class="text-xs text-blue-600 font-medium">
-                        {{ user.role }}
+                        {{ user.email || user.phone_number }}
                       </div>
                     </div>
                   </div>
                 </div>
 
                 <!-- Menu Items -->
-                <div class="py-2">
+                <div class="py-2 ps-2">
                   <router-link
-                    to="/profile"
+                    to="/"
                     class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-200">
                     <UserIcon class="w-4 h-4 mr-3 text-gray-400" />
                     My Profile
                   </router-link>
                   <router-link
-                    to="/orders"
+                    to="/order_product"
                     class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-200">
                     <ShoppingBagIcon class="w-4 h-4 mr-3 text-gray-400" />
                     My Orders
                   </router-link>
                   <router-link
-                    to="/wishlist"
+                    to="/"
                     class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-200">
                     <HeartIcon class="w-4 h-4 mr-3 text-gray-400" />
                     Wishlist
                   </router-link>
                   <router-link
-                    to="/settings"
+                    to="/"
                     class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-200">
                     <SettingsIcon class="w-4 h-4 mr-3 text-gray-400" />
                     Settings
@@ -157,7 +165,7 @@
                 </div>
 
                 <!-- Logout Section -->
-                <div class="border-t border-gray-100 pt-2">
+                <div class="border-gray-100 pt-2 ps-2">
                   <button
                     @click="handleLogout"
                     class="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors duration-200">
@@ -189,35 +197,78 @@
         leave-to-class="transform opacity-0 scale-95">
         <div
           v-if="isMobileMenuOpen"
-          class="md:hidden fixed top-16 right-2 h-[33vh] w-72 bg-gray-900 rounded shadow-lg z-40 overflow-y-auto p-2">
+          class="md:hidden fixed top-16 right-2 h-[60vh] w-65 bg-gray-900 rounded shadow-lg z-40 p-2 mt-3 overflow-y-auto me-2">
           <div class="flex flex-col py-5 px-4 space-y-2">
             <router-link
               to="/"
               @click="isMobileMenuOpen = false"
-              class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-100 transition-colors duration-200 item-end">
+              class="flex items-center px-4 py-1 text-gray-700 hover:bg-gray-400 rounded transition-colors duration-200">
               <Home class="w-5 h-5 mr-3 text-gray-500" />
-              <span class="text-lg font-medium text-gray-300">Home</span>
+              <span class="text-xs font-medium text-gray-200">Home</span>
             </router-link>
+
             <router-link
-              to="/products"
+              to="/categories"
               @click="isMobileMenuOpen = false"
-              class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-100 transition-colors duration-200">
+              class="flex items-center px-4 py-1 text-gray-700 hover:bg-gray-400 rounded transition-colors duration-200">
               <ShoppingBag class="w-5 h-5 mr-3 text-gray-500" />
-              <span class="text-lg font-medium text-gray-300">Products</span>
+              <span class="text-xs font-medium text-gray-200">Products</span>
             </router-link>
+
+            <!-- Category Dropdown -->
+            <div class="relative">
+              <button
+                @click="isDropdownOpen = !isDropdownOpen"
+                class="flex items-center justify-between px-4 py-1 text-gray-700 hover:bg-gray-400 rounded transition-colors duration-200 w-full">
+                <div class="flex items-center">
+                  <ShoppingBag class="w-5 h-5 mr-3 text-gray-500" />
+                  <span class="text-xs font-medium text-gray-200"
+                    >Category</span
+                  >
+                </div>
+                <ChevronDownIcon
+                  class="w-4 h-4 text-gray-400 transition-transform duration-300"
+                  :class="{ 'rotate-180': isDropdownOpen }" />
+              </button>
+
+              <!-- Dropdown Content -->
+              <transition
+                name="dropdown"
+                enter-active-class="transition-all ease-out duration-300"
+                leave-active-class="transition-all ease-in duration-200"
+                enter-from-class="max-h-0 opacity-0"
+                enter-to-class="max-h-96 opacity-100"
+                leave-from-class="max-h-96 opacity-100"
+                leave-to-class="max-h-0 opacity-0">
+                <div v-if="isDropdownOpen" class="mt-0 ml-8 overflow-hidden">
+                  <div class="rounded-md py-1 space-y-1 max-h-70">
+                    <router-link
+                      v-for="category in categories"
+                      :key="category.id"
+                      :to="`/category_detail/?category=${category.name}`"
+                      @click="isMobileMenuOpen = false"
+                      class="block px-3 py-1 text-xs text-gray-200 hover:bg-gray-700 transition-colors duration-200">
+                      {{ category.name }}
+                    </router-link>
+                  </div>
+                </div>
+              </transition>
+            </div>
+
             <router-link
-              to="/about"
+              to="/"
               @click="isMobileMenuOpen = false"
-              class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-100 transition-colors duration-200">
+              class="flex items-center px-4 py-1 text-gray-700 hover:bg-gray-400 rounded transition-colors duration-200">
               <Info class="w-5 h-5 mr-3 text-gray-500" />
-              <span class="text-lg font-medium text-gray-300">About</span>
+              <span class="text-xs font-medium text-gray-200">About</span>
             </router-link>
+
             <router-link
-              to="/contact"
+              to="/"
               @click="isMobileMenuOpen = false"
-              class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-100 transition-colors duration-200">
+              class="flex items-center px-4 py-1 text-gray-700 hover:bg-gray-400 rounded transition-colors duration-200">
               <Mail class="w-5 h-5 mr-3 text-gray-500" />
-              <span class="text-lg font-medium text-gray-300">Contact</span>
+              <span class="text-xs font-medium text-gray-200">Contact</span>
             </router-link>
           </div>
         </div>
@@ -227,8 +278,6 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from "vue";
-import { useRouter } from "vue-router";
 import {
   SearchIcon,
   ShoppingCartIcon,
@@ -245,23 +294,48 @@ import {
   Info,
   Mail,
 } from "lucide-vue-next";
+import { ref, computed, onMounted, onUnmounted } from "vue";
+import { useRouter } from "vue-router";
 
 const router = useRouter();
 
-// User data
+// Constants
+const defaultAvatar =
+  "https://www.pawlovetreats.com/cdn/shop/articles/pembroke-welsh-corgi-puppy_1000x.jpg?v=1628638716";
+
+// Refs
+const isDropdownOpen = ref(false);
+const isProfileMenuOpen = ref(false);
+const isMobileMenuOpen = ref(false);
+const profileDropdown = ref(null);
+const isLoading = ref(false);
+const errorMessage = ref("");
+const lastActiveTime = ref(new Date());
+const isOnline = ref(navigator.onLine);
+
+// Data
+const categories = ref([
+  { id: 1, name: "FishingClothing" },
+  { id: 2, name: "FishingChairs" },
+  { id: 3, name: "FishingWadersBoots" },
+  { id: 4, name: "FishingLine" },
+  { id: 5, name: "FishingReel" },
+  { id: 6, name: "FishingLures" },
+  { id: 7, name: "FishingBundles" },
+  { id: 8, name: "FishingTools" },
+  { id: 9, name: "FishingPolesWhips" },
+]);
+
 const user = ref({
-  name: "John Doe",
-  email: "john.doe@example.com",
-  role: "Premium Member",
-  avatar:
-    "https://www.pawlovetreats.com/cdn/shop/articles/pembroke-welsh-corgi-puppy_1000x.jpg?v=1628638716",
-  lastActive: new Date(),
-  isOnline: true,
+  name: "Guest",
+  phone_number: "0963279360",
+  avatar: "",
+  First_name: "Nam",
+  last_name: "Tola",
+  email: "",
 });
 
-// Online status management
-const lastActiveTime = ref(user.value.lastActive);
-const isOnline = ref(navigator.onLine);
+// Computed
 const userStatus = computed(() => {
   return (
     isOnline.value &&
@@ -269,7 +343,7 @@ const userStatus = computed(() => {
   );
 });
 
-// Update network status
+// Methods
 const updateNetworkStatus = () => {
   isOnline.value = navigator.onLine;
   if (isOnline.value) {
@@ -277,8 +351,6 @@ const updateNetworkStatus = () => {
   }
 };
 
-// Check activity periodically
-let activityCheckInterval;
 const checkActivity = () => {
   if (!isOnline.value) return;
   const oneMinuteAgo = new Date(Date.now() - 60000);
@@ -287,13 +359,6 @@ const checkActivity = () => {
   }
 };
 
-// UI state
-const isProfileMenuOpen = ref(false);
-const isMobileMenuOpen = ref(false);
-const profileDropdown = ref(null);
-const cartCount = ref(2);
-
-// Methods
 const toggleProfileMenu = () => {
   isProfileMenuOpen.value = !isProfileMenuOpen.value;
   isMobileMenuOpen.value = false;
@@ -310,10 +375,101 @@ const toggleMobileMenu = () => {
   }
 };
 
-const handleLogout = () => {
-  isProfileMenuOpen.value = false;
-  isMobileMenuOpen.value = false;
-  router.push("/login");
+const fetchUserData = async () => {
+  isLoading.value = true;
+  errorMessage.value = "";
+
+  try {
+    const response = await fetch(
+      "http://localhost/ApplicationBackend/api/middleware/User_sign_account.php",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          // Ensure the data here matches what the backend expects
+          username: this.username,
+          password: this.password,
+          // ... other required fields
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const responseData = await response.json();
+
+    if (responseData && responseData.status === "success") {
+      const userData = responseData.data;
+      user.value = {
+        name:
+          `${userData.First_name || ""} ${userData.last_name || ""}`.trim() ||
+          "User",
+        email: userData.email || "",
+        phone_number: userData.phone_number || "",
+        avatar: userData.avatar || defaultAvatar,
+        First_name: userData.First_name || "",
+        last_name: userData.last_name || "",
+      };
+    } else {
+      throw new Error(responseData.message || "Invalid user response");
+    }
+  } catch (error) {
+    // console.error("Error fetching user data:", error);
+    errorMessage.value = error.message;
+    if (error.message.includes("401")) {
+      router.push("/AuthView");
+    }
+  } finally {
+    isLoading.value = false;
+  }
+}
+
+const handleLogout = async () => {
+  try {
+    isLoading.value = true;
+    const response = await fetch(
+      "http://localhost/ApplicationBackend/api/middleware/logout_account.php",
+      {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    if (!data.success) {
+      throw new Error(data.message || "Logout failed");
+    }
+
+    // Reset user data
+    user.value = {
+      name: "Guest",
+      email: "",
+      phone_number: "",
+      avatar: defaultAvatar,
+      First_name: "",
+      last_name: "",
+    };
+
+    router.push("/AuthView");
+  } catch (error) {
+    // console.error("Logout failed:", error);
+    errorMessage.value = error.message || "Logout failed. Please try again.";
+  } finally {
+    isLoading.value = false;
+    isProfileMenuOpen.value = false;
+    isMobileMenuOpen.value = false;
+  }
 };
 
 const handleClickOutside = (event) => {
@@ -322,26 +478,37 @@ const handleClickOutside = (event) => {
   }
 };
 
-// Lifecycle hooks
-onMounted(() => {
-  window.addEventListener("online", updateNetworkStatus);
-  window.addEventListener("offline", updateNetworkStatus);
-  document.addEventListener("click", handleClickOutside);
+// Lifecycle Hooks
 
-  activityCheckInterval = setInterval(() => {
-    checkActivity();
-    // Simulate periodic activity updates
-    if (isOnline.value) {
-      lastActiveTime.value = new Date();
-    }
-  }, 30000);
+onMounted(async () => {
+  try {
+    await fetchUserData();
+
+    window.addEventListener("online", updateNetworkStatus);
+    window.addEventListener("offline", updateNetworkStatus);
+    document.addEventListener("click", handleClickOutside);
+
+    // Setup activity checker
+    const activityCheckInterval = setInterval(() => {
+      checkActivity();
+      if (isOnline.value) {
+        lastActiveTime.value = new Date();
+      }
+    }, 30000);
+
+    // Cleanup function
+    onUnmounted(() => {
+      window.removeEventListener("online", updateNetworkStatus);
+      window.removeEventListener("offline", updateNetworkStatus);
+      document.removeEventListener("click", handleClickOutside);
+      clearInterval(activityCheckInterval);
+    });
+  } catch (error) {
+    console.error("Component initialization error:", error);
+  }
 });
-
-onUnmounted(() => {
-  window.removeEventListener("online", updateNetworkStatus);
-  window.removeEventListener("offline", updateNetworkStatus);
-  document.removeEventListener("click", handleClickOutside);
-  clearInterval(activityCheckInterval);
+onMounted(() => {
+  fetchUserData();
 });
 </script>
 
@@ -404,5 +571,38 @@ onUnmounted(() => {
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
+}
+
+/* Custom dropdown transition */
+.dropdown-enter-active,
+.dropdown-leave-active {
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.dropdown-enter-from,
+.dropdown-leave-to {
+  max-height: 0;
+  opacity: 0;
+}
+
+.dropdown-enter-to,
+.dropdown-leave-from {
+  max-height: 20rem;
+  opacity: 1;
+}
+
+/* Custom scrollbar for dropdown */
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: #2d3748;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #4a5568;
+  border-radius: 2px;
 }
 </style>

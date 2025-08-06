@@ -1,23 +1,18 @@
 <script setup>
+import { useRoute } from "vue-router";
+import { computed } from "vue";
 import Footer from "./components/footer.vue";
+
+const route = useRoute();
+
+// Make it reactive to path changes
+const showFooter = computed(() => {
+  return !["/AuthView", "/Registration"].includes(route.path);
+});
 </script>
 
 <template>
   <router-view />
-  <Footer />
+  <Footer v-if="showFooter" />
 </template>
 
-<style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
-}
-</style>
