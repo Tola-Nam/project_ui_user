@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@heroicons/vue": "^1.0.6",
+    "@tailwindcss/line-clamp": "^0.4.4",
     "@tailwindcss/vite": "^4.1.11",
     "axios": "^1.11.0",
     "lucide-vue-next": "^0.525.0",

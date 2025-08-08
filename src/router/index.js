@@ -12,6 +12,7 @@ import AuthView from "../views/mod/AuthView.vue";
 import check_out from "/src/views/mod/AuthModal.vue"; // Assuming you have a check_out.vue file
 import categories from "../views/categories/cate_demo.vue";
 import category_detail from "../views/categories/cate_detail.vue";
+import add_favorite from "../views/categories/add_favorite.vue";
 const routes = [
   { path: "/", name: "homePage", component: homePage },
   { path: "/card", name: "card", component: card },
@@ -27,6 +28,7 @@ const routes = [
   { path: "/check_out", name: "check_out", component: check_out },
   { path: "/size_guide", name: "size_guide", component: size_guide },
   { path: "/categories", name: "categories", component: categories },
+  { path: "/add_favorite", name: "add_favorite", component: add_favorite },
   {
     path: "/category_detail",
     name: "category-detail",

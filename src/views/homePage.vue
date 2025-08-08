@@ -1,8 +1,7 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
-    <!-- Header -->
-    <navbar />
-
+  <!-- Header -->
+  <navbar />
+  <div class="min-h-screen bg-gray-200">
     <!-- Hero Carousel -->
     <section class="relative">
       <div class="relative h-96 md:h-[500px] overflow-hidden">
@@ -13,10 +12,12 @@
             v-for="(slide, index) in carouselSlides"
             :key="index"
             class="w-full flex-shrink-0 relative">
-            <img
-              :src="slide.image"
-              :alt="slide.title"
-              class="w-full h-full object-cover" />
+            <picture>
+              <img
+                :src="slide.image"
+                :alt="slide.title"
+                class="w-full h-full object-cover" />
+            </picture>
             <div
               class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
               <div class="text-center text-white max-w-2xl px-4">
@@ -75,11 +76,12 @@
           <div
             v-for="item in items"
             :key="item.pro_id"
-            class="relative bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 flex flex-col h-full">
-            
+            class="relative bg-white rounded shadow hover:shadow-md transition-all duration-300 flex flex-col h-full">
             <!-- Favorite Button -->
             <div class="absolute top-3 right-3 flex flex-col space-y-2 z-10">
-              <FavoriteButton :item="item" @favorite-toggled="handleFavoriteToggle" />
+              <FavoriteButton
+                :item="item"
+                @favorite-toggled="handleFavoriteToggle" />
             </div>
 
             <!-- Product Image -->
@@ -100,13 +102,13 @@
             </router-link>
 
             <!-- Product Info -->
-            <div class="p-4 flex flex-col flex-grow">
+            <div class="p-4 flex flex-col flex-grow bg-gray-50">
               <div class="mb-2 max-w-full font-roboto">
                 <h3 class="text-sm sm:text-md text-gray-900 mb-1 line-clamp-2">
-                  {{ item.productName }}
+                  {{ item.productName.toUpperCase() }}
                 </h3>
                 <p class="text-xs text-gray-500 uppercase tracking-wide">
-                  {{ item.category }}
+                  {{ item.category.toLowerCase() }}
                 </p>
               </div>
 
@@ -173,7 +175,7 @@ import {
   StarIcon,
   EyeIcon,
 } from "lucide-vue-next";
-import FavoriteButton from '../views/mod/FavoriteButton.vue';
+import FavoriteButton from "../views/mod/FavoriteButton.vue";
 
 export default {
   components: {
@@ -183,7 +185,7 @@ export default {
     ShoppingCartIcon,
     StarIcon,
     EyeIcon,
-    FavoriteButton
+    FavoriteButton,
   },
   setup() {
     const router = useRouter();
@@ -264,7 +266,7 @@ export default {
     };
 
     const handleFavoriteToggle = ({ id, isFavorite }) => {
-      items.value = items.value.map(item => 
+      items.value = items.value.map((item) =>
         item.pro_id === id ? { ...item, isFavorite } : item
       );
     };

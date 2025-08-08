@@ -1,6 +1,6 @@
 <template>
   <navbar />
-  <div class="min-h-screen p-4 bg-gray-50">
+  <div class="min-h-screen p-4 py-5 bg-gray-100">
     <div class="max-w-7xl mx-auto">
       <!-- Compact Grid Layout -->
       <div
@@ -20,10 +20,12 @@
             <div class="relative">
               <div
                 class="aspect-square bg-gray-100 flex items-center justify-center overflow-hidden">
-                <img
-                  :src="`http://localhost/ApplicationBackend/api/${item.thumbnail}`"
-                  :alt="item.productName"
-                  class="w-full h-full object-cover hover:scale-105 transition-transform duration-200" />
+                <picture>
+                  <img
+                    :src="`http://localhost/ApplicationBackend/api/${item.thumbnail}`"
+                    :alt="item.productName"
+                    class="w-full h-full object-cover hover:scale-105 transition-transform duration-200" />
+                </picture>
               </div>
 
               <!-- Favorite Button Overlay -->

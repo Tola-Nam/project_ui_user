@@ -30,11 +30,13 @@
         <div class="space-y-4">
           <!-- Main Product Image -->
           <div class="aspect-square bg-gray-100 rounded-lg overflow-hidden">
-            <img
-              :src="selectedImage"
-              :alt="currentProduct.productName"
-              class="w-full h-full object-cover"
-              @error="handleImageError" />
+            <picture>
+              <img
+                :src="selectedImage"
+                :alt="currentProduct.productName"
+                class="w-full h-full object-cover"
+                @error="handleImageError" />
+            </picture>
           </div>
 
           <!-- Thumbnail Images -->
@@ -49,11 +51,13 @@
                   ? 'border-black'
                   : 'border-transparent hover:border-gray-300'
               ">
-              <img
-                :src="image"
-                :alt="`Product view ${index + 1}`"
-                class="w-full h-full object-cover"
-                @error="handleImageError" />
+              <picture>
+                <img
+                  :src="image"
+                  :alt="`Product view ${index + 1}`"
+                  class="w-full h-full object-cover"
+                  @error="handleImageError" />
+              </picture>
             </button>
           </div>
         </div>
@@ -63,8 +67,9 @@
           <!-- Product Info -->
           <div>
             <h1 class="text-2xl font-medium text-gray-900">
-              {{ currentProduct.productName }}
+              {{ currentProduct.productName.toUpperCase() }}
             </h1>
+
             <p class="text-2xl font-semibold text-gray-900">
               ៛{{ formatPrice(currentProduct.price) }}
             </p>
@@ -100,7 +105,7 @@
                 v-for="color in availableColors"
                 :key="color.name"
                 @click="selectedColor = color"
-                class="w-8 h-8 rounded border-2 transition-colors"
+                class="w-8 h-8 rounded border-2 shadow-none transition-colors"
                 :style="{ backgroundColor: color.value }"
                 :class="
                   selectedColor.name === color.name
@@ -170,8 +175,8 @@
                   <span class="font-medium">Category:</span>
                   {{ currentProduct.category || "Not specified" }}
                 </p>
-                <p v-if="detail.title === 'Description'">
-                  {{ currentProduct.description || "No description available" }}
+                <p v-if="detail.title === 'Description'" class="text-gray-700">
+                  {{ currentProduct.description.toLowerCase() || "No description available" }}
                 </p>
               </div>
             </div>
@@ -208,21 +213,23 @@
       <!-- Similar Items Section -->
       <div class="mt-16">
         <h2 class="text-2xl mb-6 text-gray-800">You Might Also Like</h2>
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 border-0">
           <div
             v-for="product in similarProducts"
             :key="product.pro_id"
-            class="group cursor-pointer transition-all duration-300 hover:-translate-y-1"
+            class="group cursor-pointer transition-all duration-300 hover:-translate-y-1 bg-gray-50 shadow"
             @click="goToProduct(product.pro_id)">
             <div class="relative">
               <!-- Product Image -->
               <div
-                class="aspect-square bg-gray-50 rounded-xl overflow-hidden mb-3 shadow-sm">
-                <img
-                  :src="getImageUrl(product.thumbnail)"
-                  :alt="product.productName"
-                  class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  @error="handleImageError" />
+                class="aspect-square bg-gray-50 rounded-xl overflow-hidden mb-3">
+                <picture>
+                  <img
+                    :src="getImageUrl(product.thumbnail)"
+                    :alt="product.productName"
+                    class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    @error="handleImageError" />
+                </picture>
               </div>
 
               <!-- Favorite Button -->
@@ -242,13 +249,13 @@
             <!-- Product Info -->
             <div class="px-1 py-2">
               <h3 class="text-sm font-semibold text-gray-900 line-clamp-1">
-                {{ product.productName }}
+                {{ product.productName.toUpperCase() }}
               </h3>
               <div class="flex items-center justify-between mb-2">
-                <p class="text-xs text-gray-500">{{ product.category }}</p>
-                <span class="text-xs text-gray-500 flex items-center">
+                <p class="text-xs text-gray-500">{{ product.category.toLowerCase() }}</p>
+                <span class="text-xs text-red-400 flex items-center">
                   {{ product.product_viewers || 0 }}
-                  <EyeIcon class="w-3 h-3 ml-1 text-gray-500" />
+                  <EyeIcon class="w-4 h-4 ml-1 text-gray-500" />
                 </span>
               </div>
               <div class="flex items-center justify-between">
@@ -414,10 +421,18 @@ export default {
     // Available options
     const availableSizes = ref(["XS", "S", "M", "L", "XL", "XXL"]);
     const availableColors = ref([
-      { name: "White", value: "#FFFFFF" },
-      { name: "Black", value: "#000000" },
-      { name: "Navy", value: "#1F2937" },
-      { name: "Gray", value: "#6B7280" },
+      // 1. Essential Neutrals (3 colors)
+      { name: "Pure White", value: "#FFFFFF" }, // For backgrounds
+      { name: "Deep Black", value: "#000000" }, // For text and accents
+      { name: "Warm Gray", value: "#6B7280" }, // Secondary text
+
+      // 2. Core Brand Color (1 color)
+      { name: "Asale Red", value: "#E11D48" }, // Primary brand color (for CTAs/sales)
+
+      // 3. Complementary Accents (3 colors)
+      { name: "Ocean Blue", value: "#0284C7" }, // Cool contrast to red
+      { name: "Mustard Yellow", value: "#F59E0B" }, // Vibrant accent
+      { name: "Forest Green", value: "#15803D" },
     ]);
 
     const productDetails = [

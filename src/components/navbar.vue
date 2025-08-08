@@ -66,10 +66,11 @@
         <!-- Right Section -->
         <div class="flex items-center space-x-4">
           <!-- Search Button -->
-          <button
+          <!-- <button
             class="text-gray-700 hover:text-gray-900 p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200">
             <SearchIcon class="w-5 h-5" />
-          </button>
+          </button> -->
+          <modal_form />
 
           <!-- Profile Dropdown -->
           <div class="relative" ref="profileDropdown">
@@ -93,9 +94,11 @@
               <!-- Username and Role -->
               <div class="hidden sm:block text-left">
                 <div class="text-sm font-medium text-gray-900">
-                  {{ user.First_name }} {{ user.last_name }}
+                  {{ user.First_name || "Guest" }} {{ user.last_name || "" }}
                 </div>
-                <div class="text-xs text-gray-500">{{ user.phone_number }}</div>
+                <div class="text-xs text-gray-500">
+                  {{ user.phone_number || "Not logged in" }}
+                </div>
               </div>
 
               <!-- Dropdown Arrow -->
@@ -127,10 +130,11 @@
                       class="w-10 h-10 rounded-full object-cover" />
                     <div>
                       <div class="font-sm m-0 text-gray-900">
-                        {{ user.First_name }} {{ user.last_name }}
+                        {{ user.First_name || "Guest" }}
+                        {{ user.last_name || "" }}
                       </div>
                       <div class="text-xs text-blue-600 font-medium">
-                        {{ user.email || user.phone_number }}
+                        {{ user.phone_number || "Guest user" }}
                       </div>
                     </div>
                   </div>
@@ -151,7 +155,7 @@
                     My Orders
                   </router-link>
                   <router-link
-                    to="/"
+                    to="/add_favorite"
                     class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-200">
                     <HeartIcon class="w-4 h-4 mr-3 text-gray-400" />
                     Wishlist
@@ -256,7 +260,7 @@
             </div>
 
             <router-link
-              to="/"
+              to="/about"
               @click="isMobileMenuOpen = false"
               class="flex items-center px-4 py-1 text-gray-700 hover:bg-gray-400 rounded transition-colors duration-200">
               <Info class="w-5 h-5 mr-3 text-gray-500" />
@@ -264,7 +268,7 @@
             </router-link>
 
             <router-link
-              to="/"
+              to="/contact"
               @click="isMobileMenuOpen = false"
               class="flex items-center px-4 py-1 text-gray-700 hover:bg-gray-400 rounded transition-colors duration-200">
               <Mail class="w-5 h-5 mr-3 text-gray-500" />
@@ -278,9 +282,9 @@
 </template>
 
 <script setup>
+import modal_form from "./modal_form.vue";
 import {
   SearchIcon,
-  ShoppingCartIcon,
   ChevronDownIcon,
   UserIcon,
   ShoppingBagIcon,
@@ -327,12 +331,10 @@ const categories = ref([
 ]);
 
 const user = ref({
-  name: "Guest",
-  phone_number: "0963279360",
+  First_name: "",
+  Last_name: "",
+  Phone_number: "",
   avatar: "",
-  First_name: "Nam",
-  last_name: "Tola",
-  email: "",
 });
 
 // Computed
@@ -381,18 +383,13 @@ const fetchUserData = async () => {
 
   try {
     const response = await fetch(
-      "http://localhost/ApplicationBackend/api/middleware/User_sign_account.php",
+      "http://localhost/ApplicationBackend/api/middleware/get_profile_user.php",
       {
-        method: "POST",
+        method: "GET",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          // Ensure the data here matches what the backend expects
-          username: this.username,
-          password: this.password,
-          // ... other required fields
-        }),
       }
     );
 
@@ -402,31 +399,39 @@ const fetchUserData = async () => {
 
     const responseData = await response.json();
 
-    if (responseData && responseData.status === "success") {
-      const userData = responseData.data;
+    if (responseData && responseData.logged_in) {
+      const userData = responseData.user;
       user.value = {
-        name:
-          `${userData.First_name || ""} ${userData.last_name || ""}`.trim() ||
-          "User",
-        email: userData.email || "",
-        phone_number: userData.phone_number || "",
-        avatar: userData.avatar || defaultAvatar,
         First_name: userData.First_name || "",
-        last_name: userData.last_name || "",
+        last_name: userData.Last_name || "",
+        phone_number: userData.Phone_number || "",
+        avatar: userData.avatar || defaultAvatar,
       };
     } else {
-      throw new Error(responseData.message || "Invalid user response");
+      // User is not logged in, set to guest
+      user.value = {
+        First_name: "null",
+        last_name: "",
+        email: "",
+        phone_number: "",
+        avatar: defaultAvatar,
+      };
     }
   } catch (error) {
-    // console.error("Error fetching user data:", error);
+    console.error("Error fetching user data:", error);
     errorMessage.value = error.message;
-    if (error.message.includes("401")) {
-      router.push("/AuthView");
-    }
+    // Set to guest if there's an error
+    user.value = {
+      First_name: "Guest",
+      last_name: "",
+      email: "",
+      phone_number: "",
+      avatar: defaultAvatar,
+    };
   } finally {
     isLoading.value = false;
   }
-}
+};
 
 const handleLogout = async () => {
   try {
@@ -451,19 +456,18 @@ const handleLogout = async () => {
       throw new Error(data.message || "Logout failed");
     }
 
-    // Reset user data
+    // Reset user data to guest
     user.value = {
-      name: "Guest",
+      First_name: "Guest",
+      last_name: "",
       email: "",
       phone_number: "",
       avatar: defaultAvatar,
-      First_name: "",
-      last_name: "",
     };
 
     router.push("/AuthView");
   } catch (error) {
-    // console.error("Logout failed:", error);
+    console.error("Logout failed:", error);
     errorMessage.value = error.message || "Logout failed. Please try again.";
   } finally {
     isLoading.value = false;
@@ -479,7 +483,6 @@ const handleClickOutside = (event) => {
 };
 
 // Lifecycle Hooks
-
 onMounted(async () => {
   try {
     await fetchUserData();
@@ -506,9 +509,6 @@ onMounted(async () => {
   } catch (error) {
     console.error("Component initialization error:", error);
   }
-});
-onMounted(() => {
-  fetchUserData();
 });
 </script>
 
