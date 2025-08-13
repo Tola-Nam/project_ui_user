@@ -1,75 +1,45 @@
 # 🎣 Fishing Store
 
-A modern, responsive e-commerce web application built with Vue.js for fishing enthusiasts. This application provides a complete online shopping experience for fishing gear, equipment, and accessories.
-
-## 📋 Table of Contents
-
-- [🎣 Fishing Store](#-fishing-store)
-  - [📋 Table of Contents](#-table-of-contents)
-  - [✨ Features](#-features)
-    - [🛒 E-commerce Functionality](#-e-commerce-functionality)
-    - [👤 User Management](#-user-management)
-    - [🎨 User Experience](#-user-experience)
-  - [🚀 Tech Stack](#-tech-stack)
-    - [Frontend](#frontend)
-    - [Build Tools](#build-tools)
-    - [Development](#development)
-  - [📁 Project Structure](#-project-structure)
-  - [📋 Prerequisites](#-prerequisites)
-  - [🛠️ Installation](#️-installation)
-  - [🚦 Development](#-development)
-    - [Start Development Server](#start-development-server)
-    - [Available Scripts](#available-scripts)
-  - [🏗️ Building for Production](#️-building-for-production)
-  - [🧩 Project Components](#-project-components)
-    - [Core Components](#core-components)
-    - [Views](#views)
-    - [Authentication](#authentication)
-    - [Features](#features)
-  - [📱 Screenshots](#-screenshots)
-  - [🤝 Contributing](#-contributing)
-    - [Development Guidelines](#development-guidelines)
-  - [📄 License](#-license)
-  - [📞 Support](#-support)
-  - [🙏 Acknowledgments](#-acknowledgments)
+_A modern, responsive e-commerce web application built with Vue.js for fishing enthusiasts. This application provides a complete online shopping experience for fishing gear, equipment, and accessories._
 
 ## ✨ Features
 
-### 🛒 E-commerce Functionality
+### 🛒 _E-commerce Functionality_
 
-- **Product Catalog**: Browse fishing equipment and gear
+- **Product Catalog**: _Browse fishing equipment and gear_
 - **Shopping Cart**: Add, remove, and manage items
 - **Order Processing**: Complete purchase workflow
 - **Customer Receipts**: Digital receipt generation
 - **Size Guide**: Interactive sizing modal for products
 
-### 👤 User Management
+### 👤 _User Management_
 
 - **User Authentication**: Secure login and registration
 - **User Profiles**: Personal account management
 - **Favorites System**: Save preferred products
 - **Order History**: Track past purchases
 
-### 🎨 User Experience
+### 🎨 _User Experience_
 
 - **Responsive Design**: Mobile-first approach with Tailwind CSS
 - **Interactive Modals**: Smooth user interactions
 - **Category Navigation**: Organized product browsing
 - **Modern UI/UX**: Clean and intuitive interface
 
-## 🚀 Tech Stack
+## 🚀 _Tech Stack_
 
-### Frontend
+### _Frontend_
 
 - **Vue.js 3** - Progressive JavaScript framework
 - **Vue Router** - Official routing library
 - **Pinia/Vuex** - State management
 - **Tailwind CSS** - Utility-first CSS framework
+- **lucide-vue-next** - icons for use
 
 ### Build Tools
 
 - **Vite** - Next generation frontend tooling
-- **Node.js** - JavaScript runtime
+- **PHP** - PHP runtime
 
 ### Development
 
@@ -125,9 +95,9 @@ fishing-store/
 
 ## 📋 Prerequisites
 
-Before running this project, make sure you have the following installed:
+_Before running this project, make sure you have the following installed:_
 
-- **Node.js** (v16.0.0 or higher)
+- **Node.js** (v22.12.0 or higher)
 - **npm** (v8.0.0 or higher) or **yarn**
 - **Git** for version control
 
@@ -144,8 +114,12 @@ Before running this project, make sure you have the following installed:
 
    ```bash
    npm install
-   # or
-   yarn install
+   # router
+   npm install vue-router
+   # icon
+   npm install lucide-vue-next
+   # axios
+   npm install axios
    ```
 
 3. **Environment setup** (if needed)
@@ -164,7 +138,7 @@ npm run dev
 yarn dev
 ```
 
-The application will be available at `http://localhost:5173`
+_The application will be available at `http://localhost:5173`_
 
 ### Available Scripts
 
@@ -182,13 +156,13 @@ npm run build
 yarn build
 ```
 
-The built files will be in the `dist/` directory, ready for deployment.
+_The built files will be in the `dist/` directory, ready for deployment._
 
 ## 🧩 Project Components
 
 ### Core Components
 
-| Component        | Description                |
+| _Component_      | _Description_              |
 | ---------------- | -------------------------- |
 | `App.vue`        | Root application component |
 | `navbar.vue`     | Main navigation bar        |
@@ -197,7 +171,7 @@ The built files will be in the `dist/` directory, ready for deployment.
 
 ### Views
 
-| View                   | Purpose                             |
+| _View_                 | _Purpose_                           |
 | ---------------------- | ----------------------------------- |
 | `homePage.vue`         | Landing page with featured products |
 | `card.vue`             | Shopping cart management            |
@@ -206,7 +180,7 @@ The built files will be in the `dist/` directory, ready for deployment.
 
 ### Authentication
 
-| Component               | Functionality          |
+| _Component_             | _Functionality_        |
 | ----------------------- | ---------------------- |
 | `AuthModal.vue`         | Login/signup modal     |
 | `AuthView.vue`          | Authentication page    |
@@ -264,9 +238,9 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
 
 ## 📞 Support
 
-If you have any questions or need help getting started:
+_If you have any questions or need help getting started_
 
-- 📧 Email: support@fishingstore.com
+- 📧 Email: namtola4444@gmail.com
 - 🐛 Issues: [GitHub Issues](https://github.com/yourusername/fishing-store/issues)
 - 💬 Discussions: [GitHub Discussions](https://github.com/yourusername/fishing-store/discussions)
 
