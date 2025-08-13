@@ -1,190 +1,189 @@
 <template>
-  <div class="bg-gray-50 min-h-screen p-6">
-    <div class="max-w-7xl mx-auto">
-      <!-- Header -->
-      <div class="mb-8">
-        <navbar />
-      </div>
+  <navbar />
+  <!-- <div class="bg-gray-50 min-h-screen p-4"> -->
+  <div class="max-w-7xl mx-auto">
+    <!-- Header -->
+    <!-- <div class="mb-8"></div> -->
 
-      <!-- Table Container -->
-      <div
-        class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-        <!-- Table Header -->
-        <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
-          <div class="flex items-center justify-between">
-            <h2 class="text-lg font-semibold text-gray-900">Recent Orders</h2>
-            <div class="flex items-center space-x-3">
-              <button
-                class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                Filter
-              </button>
-              <button
-                class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                Export
-              </button>
-            </div>
+    <!-- Table Container -->
+    <div
+      class="bg-white rounded shadow-sm border border-gray-200 overflow-hidden">
+      <!-- Table Header -->
+      <div class="px-4 py-2 border-b border-gray-200 bg-gray-50">
+        <div class="flex items-center justify-between">
+          <h2 class="text-lg font-semibold text-gray-900">Recent Orders</h2>
+          <div class="flex items-center space-x-3">
+            <button
+              class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500">
+              Filter
+            </button>
+            <button
+              class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+              Export
+            </button>
           </div>
         </div>
+      </div>
 
-        <!-- Table -->
-        <div class="overflow-x-auto">
-          <table class="w-full">
-            <thead class="bg-gray-50 border-b border-gray-200">
-              <tr>
-                <th
-                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  <input
-                    type="checkbox"
-                    class="rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
-                </th>
-                <th
-                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Order ID
-                </th>
-                <th
-                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Created
-                </th>
-                <th
-                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Customer
-                </th>
-                <th
-                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Fulfillment
-                </th>
-                <th
-                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Total
-                </th>
-                <th
-                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Profit
-                </th>
-                <th
-                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
-                </th>
-                <th
-                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Updated
-                </th>
-              </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
-              <tr
-                v-for="order in orders"
-                :key="order.id"
-                class="hover:bg-gray-50 transition-colors duration-200">
-                <!-- Checkbox -->
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <input
-                    type="checkbox"
-                    class="rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
-                </td>
+      <!-- Table -->
+      <div class="overflow-x-auto">
+        <table class="w-full table-fixed">
+          <thead class="bg-gray-50 border-b border-gray-200">
+            <tr>
+              <th
+                class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <input
+                  type="checkbox"
+                  class="rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
+              </th>
+              <th
+                class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Order ID
+              </th>
+              <th
+                class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Created
+              </th>
+              <th
+                class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Customer
+              </th>
+              <th
+                class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Fulfillment
+              </th>
+              <th
+                class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Total
+              </th>
+              <th
+                class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Profit
+              </th>
+              <th
+                class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Status
+              </th>
+              <th
+                class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Updated
+              </th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <tr
+              v-for="order in orders"
+              :key="order.id"
+              class="hover:bg-gray-50 transition-colors duration-200">
+              <!-- Checkbox -->
+              <td class="px-4 py-2 whitespace-nowrap">
+                <input
+                  type="checkbox"
+                  class="rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
+              </td>
 
-                <!-- Order ID -->
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <div
-                    class="text-sm font-medium text-blue-600 hover:text-blue-800 cursor-pointer">
-                    {{ order.id }}
-                  </div>
-                </td>
+              <!-- Order ID -->
+              <td class="px-4 py-2 whitespace-nowrap">
+                <div
+                  class="text-sm font-medium text-blue-600 hover:text-blue-800 cursor-pointer">
+                  {{ order.id }}
+                </div>
+              </td>
 
-                <!-- Created Date -->
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm text-gray-900">{{ order.created }}</div>
-                </td>
+              <!-- Created Date -->
+              <td class="px-4 py-2 whitespace-nowrap">
+                <div class="text-sm text-gray-900">{{ order.created }}</div>
+              </td>
 
-                <!-- Customer -->
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="flex items-center">
-                    <img
-                      :src="order.customer.avatar"
-                      :alt="order.customer.name"
-                      class="w-8 h-8 rounded-full object-cover mr-3" />
-                    <div class="text-sm font-medium text-gray-900">
-                      {{ order.customer.name }}
-                    </div>
-                  </div>
-                </td>
-
-                <!-- Fulfillment -->
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <span
-                    class="inline-flex px-2 py-1 text-xs font-semibold rounded-full"
-                    :class="getFulfillmentBadgeClass(order.fulfillment)">
-                    {{ order.fulfillment }}
-                  </span>
-                </td>
-
-                <!-- Total -->
-                <td class="px-6 py-4 whitespace-nowrap">
+              <!-- Customer -->
+              <td class="px-4 py-2 whitespace-nowrap">
+                <div class="flex items-center">
+                  <img
+                    :src="order.customer.avatar"
+                    :alt="order.customer.name"
+                    class="w-8 h-8 rounded-full object-cover mr-3" />
                   <div class="text-sm font-medium text-gray-900">
-                    {{ order.total }}
+                    {{ order.customer.name }}
                   </div>
-                </td>
+                </div>
+              </td>
 
-                <!-- Profit -->
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm font-medium text-gray-900">
-                    {{ order.profit }}
-                  </div>
-                </td>
+              <!-- Fulfillment -->
+              <td class="px-4 py-2 whitespace-nowrap">
+                <span
+                  class="inline-flex px-2 py-2 text-xs font-semibold rounded-full"
+                  :class="getFulfillmentBadgeClass(order.fulfillment)">
+                  {{ order.fulfillment }}
+                </span>
+              </td>
 
-                <!-- Status -->
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <span
-                    class="inline-flex px-2 py-1 text-xs font-semibold rounded-full"
-                    :class="getStatusBadgeClass(order.status)">
-                    {{ order.status }}
-                  </span>
-                </td>
+              <!-- Total -->
+              <td class="px-4 py-2 whitespace-nowrap">
+                <div class="text-sm font-medium text-gray-900">
+                  {{ order.total }}
+                </div>
+              </td>
 
-                <!-- Updated -->
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm text-gray-500">{{ order.updated }}</div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+              <!-- Profit -->
+              <td class="px-4 py-2 whitespace-nowrap">
+                <div class="text-sm font-medium text-gray-900">
+                  {{ order.profit }}
+                </div>
+              </td>
 
-        <!-- Table Footer -->
-        <div class="px-6 py-4 border-t border-gray-200 bg-gray-50">
-          <div class="flex items-center justify-between">
-            <div class="text-sm text-gray-700">
-              Showing <span class="font-medium">1</span> to
-              <span class="font-medium">8</span> of
-              <span class="font-medium">47</span> results
-            </div>
-            <div class="flex items-center space-x-2">
-              <button
-                class="px-3 py-1 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
-                Previous
-              </button>
-              <button
-                class="px-3 py-1 text-sm font-medium text-white bg-blue-600 border border-blue-600 rounded-md hover:bg-blue-700">
-                1
-              </button>
-              <button
-                class="px-3 py-1 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
-                2
-              </button>
-              <button
-                class="px-3 py-1 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
-                3
-              </button>
-              <button
-                class="px-3 py-1 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
-                Next
-              </button>
-            </div>
+              <!-- Status -->
+              <td class="px-4 py-2 whitespace-nowrap">
+                <span
+                  class="inline-flex px-2 py-2 text-xs font-semibold rounded-full"
+                  :class="getStatusBadgeClass(order.status)">
+                  {{ order.status }}
+                </span>
+              </td>
+
+              <!-- Updated -->
+              <td class="px-4 py-2 whitespace-nowrap">
+                <div class="text-sm text-gray-500">{{ order.updated }}</div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Table Footer -->
+      <div class="px-4 py-2 border-t border-gray-200 bg-gray-50">
+        <div class="flex items-center justify-between">
+          <div class="text-sm text-gray-700">
+            Showing <span class="font-medium">1</span> to
+            <span class="font-medium">8</span> of
+            <span class="font-medium">47</span> results
+          </div>
+          <div class="flex items-center space-x-2">
+            <button
+              class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+              Previous
+            </button>
+            <button
+              class="px-3 py-2 text-sm font-medium text-white bg-blue-600 border border-blue-600 rounded-md hover:bg-blue-700">
+              1
+            </button>
+            <button
+              class="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+              2
+            </button>
+            <button
+              class="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+              3
+            </button>
+            <button
+              class="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+              Next
+            </button>
           </div>
         </div>
       </div>
     </div>
   </div>
+  <!-- </div> -->
 </template>
 
 <script setup>
@@ -198,7 +197,7 @@ const orders = ref([
     created: "Aug 1, 2019",
     customer: {
       name: "Harriet Santiago",
-      avatar: "/placeholder.svg?height=32&width=32",
+      avatar: "https://images.ctfassets.net/hrltx12pl8hq/28ECAQiPJZ78hxatLTa7Ts/2f695d869736ae3b0de3e56ceaca3958/free-nature-images.jpg?fit=fill&w=1200&h=630",
     },
     fulfillment: "Processing",
     total: "$604.50",
@@ -211,7 +210,7 @@ const orders = ref([
     created: "Jul 31, 2019",
     customer: {
       name: "Sara Graham",
-      avatar: "/placeholder.svg?height=32&width=32",
+      avatar: "https://images.ctfassets.net/hrltx12pl8hq/28ECAQiPJZ78hxatLTa7Ts/2f695d869736ae3b0de3e56ceaca3958/free-nature-images.jpg?fit=fill&w=1200&h=630",
     },
     fulfillment: "Pending Receipt",
     total: "$1,175.50",
@@ -224,7 +223,7 @@ const orders = ref([
     created: "Jul 16, 2019",
     customer: {
       name: "Elmer McGee",
-      avatar: "/placeholder.svg?height=32&width=32",
+      avatar: "https://images.ctfassets.net/hrltx12pl8hq/28ECAQiPJZ78hxatLTa7Ts/2f695d869736ae3b0de3e56ceaca3958/free-nature-images.jpg?fit=fill&w=1200&h=630",
     },
     fulfillment: "Completed",
     total: "$175.50",
@@ -237,7 +236,7 @@ const orders = ref([
     created: "Jul 17, 2019",
     customer: {
       name: "Victor Arnold",
-      avatar: "/placeholder.svg?height=32&width=32",
+      avatar: "https://images.ctfassets.net/hrltx12pl8hq/28ECAQiPJZ78hxatLTa7Ts/2f695d869736ae3b0de3e56ceaca3958/free-nature-images.jpg?fit=fill&w=1200&h=630",
     },
     fulfillment: "Completed",
     total: "$403.50",
@@ -250,7 +249,7 @@ const orders = ref([
     created: "Jul 19, 2019",
     customer: {
       name: "Harrison Scott",
-      avatar: "/placeholder.svg?height=32&width=32",
+      avatar: "https://images.ctfassets.net/hrltx12pl8hq/28ECAQiPJZ78hxatLTa7Ts/2f695d869736ae3b0de3e56ceaca3958/free-nature-images.jpg?fit=fill&w=1200&h=630",
     },
     fulfillment: "Completed",
     total: "$179",
@@ -263,7 +262,7 @@ const orders = ref([
     created: "Jul 27, 2019",
     customer: {
       name: "Patricia Vaughn",
-      avatar: "/placeholder.svg?height=32&width=32",
+      avatar: "https://images.ctfassets.net/hrltx12pl8hq/28ECAQiPJZ78hxatLTa7Ts/2f695d869736ae3b0de3e56ceaca3958/free-nature-images.jpg?fit=fill&w=1200&h=630",
     },
     fulfillment: "Pending Receipt",
     total: "$624.50",
@@ -276,7 +275,7 @@ const orders = ref([
     created: "Jul 19, 2019",
     customer: {
       name: "Earl Hopkins",
-      avatar: "/placeholder.svg?height=32&width=32",
+      avatar: "https://images.ctfassets.net/hrltx12pl8hq/28ECAQiPJZ78hxatLTa7Ts/2f695d869736ae3b0de3e56ceaca3958/free-nature-images.jpg?fit=fill&w=1200&h=630",
     },
     fulfillment: "Processing",
     total: "$175.50",
