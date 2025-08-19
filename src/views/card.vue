@@ -1,7 +1,6 @@
 <template>
+  <navbar />
   <div class="min-h-screen bg-white">
-    <navbar />
-
     <!-- Loading State -->
     <div v-if="loading" class="flex justify-center items-center min-h-screen">
       <div
@@ -17,7 +16,7 @@
         <p class="text-gray-600">{{ error }}</p>
         <button
           @click="fetchProduct"
-          class="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+          class="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors">
           Retry
         </button>
       </div>
@@ -33,7 +32,7 @@
             <picture>
               <img
                 :src="selectedImage"
-                :alt="currentProduct.productName"
+                :alt="currentProduct.productName || 'Product Image'"
                 class="w-full h-full object-cover"
                 @error="handleImageError" />
             </picture>
@@ -67,11 +66,10 @@
           <!-- Product Info -->
           <div>
             <h1 class="text-2xl font-medium text-gray-900">
-              {{ currentProduct.productName.toUpperCase() }}
+              {{ currentProduct.productName?.toUpperCase() || "PRODUCT NAME" }}
             </h1>
-
-            <p class="text-2xl font-semibold text-gray-900">
-              ៛{{ formatPrice(currentProduct.price) }}
+            <p class="text-2xl font-semibold text-gray-900 mt-2">
+              ៛{{ formatPrice(currentProduct.price || 0) }}
             </p>
           </div>
 
@@ -100,20 +98,23 @@
           <!-- Color Selection -->
           <div>
             <h3 class="text-sm font-medium text-gray-900 mb-3">Color</h3>
-            <div class="flex space-x-2">
+            <div class="flex space-x-2 flex-wrap gap-2">
               <button
                 v-for="color in availableColors"
                 :key="color.name"
                 @click="selectedColor = color"
-                class="w-8 h-8 rounded border-2 shadow-none transition-colors"
+                class="w-8 h-8 rounded-full border-2 shadow-sm transition-all hover:scale-110"
                 :style="{ backgroundColor: color.value }"
                 :class="
                   selectedColor.name === color.name
-                    ? 'border-black'
+                    ? 'border-black ring-2 ring-gray-300'
                     : 'border-gray-300 hover:border-gray-400'
                 "
                 :title="color.name"></button>
             </div>
+            <p class="text-sm text-gray-500 mt-2">
+              Selected Color: {{ selectedColor.name }}
+            </p>
           </div>
 
           <!-- Quantity Selection -->
@@ -123,22 +124,30 @@
               <button
                 @click="decreaseQuantity"
                 :disabled="quantity <= 1"
-                class="w-10 h-10 rounded border border-gray-300 flex items-center justify-center hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed">
-                -
+                class="w-10 h-10 rounded border border-gray-300 flex items-center justify-center hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+                <MinusIcon class="w-4 h-4" />
               </button>
-              <span class="text-lg font-medium">{{ quantity }}</span>
+              <span class="text-lg font-medium min-w-[3rem] text-center">{{
+                quantity
+              }}</span>
               <button
                 @click="increaseQuantity"
-                class="w-10 h-10 rounded border border-gray-300 flex items-center justify-center hover:bg-gray-100">
-                +
+                class="w-10 h-10 rounded border border-gray-300 flex items-center justify-center hover:bg-gray-100 transition-colors">
+                <PlusIcon class="w-4 h-4" />
               </button>
             </div>
           </div>
 
+          <!-- Add to Cart Button -->
           <button
-            @click="handleAddToCart"
-            class="w-full bg-black text-white py-3 px-6 rounded font-medium hover:bg-gray-800 transition-colors">
-            Add to bag
+            @click="handleAddToCart(currentProduct.pro_id)"
+            :disabled="loading"
+            class="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-blue-500 text-white py-3 px-6 rounded-lg font-medium shadow hover:from-blue-700 hover:to-blue-600 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+            <span v-if="loading" class="animate-pulse"> Adding... </span>
+
+            <span v-else class="flex items-center gap-2">
+              <ShoppingCartIcon class="w-5 h-5 sm:w-6 sm:h-6" /> Order Now
+            </span>
           </button>
 
           <!-- Product Details Accordion -->
@@ -149,34 +158,48 @@
               class="border-b border-gray-200">
               <button
                 @click="toggleDetail(detail.title)"
-                class="w-full py-4 flex justify-between items-center text-left hover:bg-gray-50 transition-colors">
+                class="w-full py-4 flex justify-between items-center text-left hover:bg-gray-50 transition-colors rounded-lg px-2">
                 <span class="font-medium">{{ detail.title }}</span>
                 <ChevronDownIcon
-                  class="w-5 h-5 transition-transform"
+                  class="w-5 h-5 transition-transform duration-200"
                   :class="
                     openDetails.includes(detail.title) ? 'rotate-180' : ''
                   " />
               </button>
               <div
                 v-if="openDetails.includes(detail.title)"
-                class="pb-4 text-sm text-gray-600 animate-fade-in">
+                class="pb-4 px-2 text-sm text-gray-600 animate-fade-in">
                 <p v-if="detail.title === 'Product Code'">
                   <span class="font-medium">Item code:</span>
-                  {{ currentProduct.pro_id }} + {{ currentProduct.productName }}
+                  {{ currentProduct.pro_id || "N/A" }} -
+                  {{ currentProduct.productName || "N/A" }}
                 </p>
                 <p v-if="detail.title === 'Size & Fit'">
                   <span class="font-medium">Size:</span>
-                  {{ currentProduct.length || "Not specified" }}
+                  {{
+                    currentProduct.length ||
+                    "Standard sizing - see size guide for details"
+                  }}
                 </p>
-                <p v-if="detail.title === 'Size Guide'">
-                  <SizeGuide />
-                </p>
+                <div v-if="detail.title === 'Size Guide'">
+                  <SizeGuide v-if="showSizeGuide" />
+                  <button
+                    @click="showSizeGuide = !showSizeGuide"
+                    class="text-blue-600 hover:underline text-sm">
+                    {{ showSizeGuide ? "Hide" : "View" }} Size Guide
+                  </button>
+                </div>
                 <p v-if="detail.title === 'Category'">
                   <span class="font-medium">Category:</span>
-                  {{ currentProduct.category || "Not specified" }}
+                  {{ currentProduct.category || "General" }}
                 </p>
-                <p v-if="detail.title === 'Description'" class="text-gray-700">
-                  {{ currentProduct.description.toLowerCase() || "No description available" }}
+                <p
+                  v-if="detail.title === 'Description'"
+                  class="text-gray-700 leading-relaxed">
+                  {{
+                    currentProduct.description ||
+                    "High-quality product with excellent craftsmanship and attention to detail."
+                  }}
                 </p>
               </div>
             </div>
@@ -191,13 +214,13 @@
                   :key="star"
                   class="w-4 h-4"
                   :class="
-                    star <= Math.floor(currentProduct.rating)
+                    star <= Math.floor(currentProduct.rating || 4.5)
                       ? 'text-yellow-400 fill-current'
                       : 'text-gray-300'
                   " />
               </div>
               <span class="text-sm text-gray-600"
-                >{{ currentProduct.rating }}/5</span
+                >{{ currentProduct.rating || 4.5 }}/5</span
               >
               <span class="text-sm text-gray-500"
                 >({{ currentProduct.reviewCount || 0 }} reviews)</span
@@ -212,17 +235,19 @@
 
       <!-- Similar Items Section -->
       <div class="mt-16">
-        <h2 class="text-2xl mb-6 text-gray-800">You Might Also Like</h2>
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 border-0">
+        <h2 class="text-2xl mb-6 text-gray-800 font-semibold">
+          You Might Also Like
+        </h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
           <div
             v-for="product in similarProducts"
             :key="product.pro_id"
-            class="group cursor-pointer transition-all duration-300 hover:-translate-y-1 bg-gray-50 shadow"
+            class="group cursor-pointer transition-all duration-300 hover:-translate-y-1 bg-gray-50 rounded-lg shadow hover:shadow-lg"
             @click="goToProduct(product.pro_id)">
             <div class="relative">
               <!-- Product Image -->
               <div
-                class="aspect-square bg-gray-50 rounded-xl overflow-hidden mb-3">
+                class="aspect-square bg-gray-50 rounded-lg overflow-hidden mb-3">
                 <picture>
                   <img
                     :src="getImageUrl(product.thumbnail)"
@@ -247,20 +272,22 @@
             </div>
 
             <!-- Product Info -->
-            <div class="px-1 py-2">
-              <h3 class="text-sm font-semibold text-gray-900 line-clamp-1">
-                {{ product.productName.toUpperCase() }}
+            <div class="px-3 py-2">
+              <h3 class="text-sm font-semibold text-gray-900 line-clamp-1 mb-1">
+                {{ product.productName?.toUpperCase() || "PRODUCT NAME" }}
               </h3>
               <div class="flex items-center justify-between mb-2">
-                <p class="text-xs text-gray-500">{{ product.category.toLowerCase() }}</p>
+                <p class="text-xs text-gray-500 capitalize">
+                  {{ product.category?.toLowerCase() || "general" }}
+                </p>
                 <span class="text-xs text-red-400 flex items-center">
                   {{ product.product_viewers || 0 }}
-                  <EyeIcon class="w-4 h-4 ml-1 text-gray-500" />
+                  <EyeIcon class="w-3 h-3 ml-1 text-gray-500" />
                 </span>
               </div>
               <div class="flex items-center justify-between">
                 <p class="text-sm font-bold text-gray-900">
-                  ៛{{ formatPrice(product.price) }}
+                  ៛{{ formatPrice(product.price || 0) }}
                 </p>
                 <div class="flex items-center">
                   <StarIcon class="w-3 h-3 text-yellow-400 fill-current" />
@@ -276,124 +303,155 @@
     </div>
 
     <!-- Authentication Required Modal -->
-    <div
-      v-if="showAuthModal"
-      class="fixed inset-0 bg-opacity-100 shadow-lg flex items-center justify-center z-50">
-      <div class="bg-white shadow-lg rounded-lg p-6 w-full max-w-md">
-        <div class="flex justify-between items-center mb-4">
-          <h3 class="text-lg text-center text-gray-800">
-            Login Required to check out items
-          </h3>
-          <button
-            @click="showAuthModal = false"
-            class="text-gray-500 hover:text-gray-700">
-            &times;
-          </button>
-        </div>
-        <p class="mb-6 text-sm text-gray-600 text-center">
-          You need to login or register to add items to your cart.
-        </p>
-        <div class="flex space-x-3">
-          <button
-            @click="goToLogin"
-            class="flex-1 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-            Login
-          </button>
-          <button
-            @click="goToRegister"
-            class="flex-1 py-2 border border-gray-300 rounded hover:bg-gray-100">
-            Register
-          </button>
+    <Teleport to="body">
+      <div
+        v-if="showAuthModal"
+        class="fixed inset-0 bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div class="bg-white shadow-lg rounded-lg p-6 w-full max-w-md">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-semibold text-gray-800">Login Required</h3>
+            <button
+              @click="showAuthModal = false"
+              class="text-gray-500 hover:text-gray-700 text-2xl leading-none">
+              &times;
+            </button>
+          </div>
+          <p class="mb-6 text-sm text-gray-600 text-center">
+            You need to login or register to add items to your cart.
+          </p>
+          <div class="flex space-x-3">
+            <button
+              @click="goToLogin"
+              class="flex-1 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
+              Login
+            </button>
+            <button
+              @click="goToRegister"
+              class="flex-1 py-2 border border-gray-300 rounded hover:bg-gray-100 transition-colors">
+              Register
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+    </Teleport>
 
     <!-- Order Confirmation Modal -->
-    <div
-      v-if="showCartModal"
-      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div class="bg-white w-full max-w-md p-6 rounded-lg shadow-lg mx-4">
-        <div class="flex justify-between items-center mb-4">
-          <h2 class="text-xl font-bold">Added to Cart</h2>
-          <button
-            @click="showCartModal = false"
-            class="text-gray-500 hover:text-gray-700">
-            ✕
-          </button>
-        </div>
-
-        <div class="space-y-4">
-          <div class="flex items-center space-x-4">
-            <div class="w-20 h-20 bg-gray-100 rounded overflow-hidden">
-              <img
-                :src="selectedImage"
-                :alt="currentProduct.productName"
-                class="w-full h-full object-cover" />
-            </div>
-            <div>
-              <h3 class="font-medium">{{ currentProduct.productName }}</h3>
-              <p class="text-sm text-gray-600">
-                {{ selectedSize }} | {{ selectedColor.name }}
-              </p>
-              <p class="text-sm font-medium">
-                ៛{{ formatPrice(currentProduct.price * quantity) }}
-              </p>
-            </div>
+    <Teleport to="body">
+      <div
+        v-if="showCartModal"
+        class="fixed inset-0 bg-opacity-50 flex items-center justify-end shadow-lg z-50 p-4">
+        <div class="bg-white w-full max-w-md p-6 rounded-lg shadow-lg">
+          <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-bold">Added to Cart</h2>
+            <button
+              @click="showCartModal = false"
+              class="text-gray-500 hover:text-gray-700 text-2xl leading-none">
+              ✕
+            </button>
           </div>
 
-          <div class="border-t pt-4">
-            <div class="flex justify-between mb-2">
-              <span class="text-gray-600">Subtotal</span>
-              <span class="font-medium"
+          <div class="space-y-4">
+            <div class="flex items-center space-x-4">
+              <div
+                class="w-20 h-20 bg-gray-100 rounded overflow-hidden flex-shrink-0">
+                <img
+                  :src="selectedImage"
+                  :alt="currentProduct.productName"
+                  class="w-full h-full object-cover" />
+              </div>
+              <div class="flex-grow">
+                <h3 class="font-medium">{{ currentProduct.productName }}</h3>
+                <p class="text-sm text-gray-600">
+                  {{ selectedSize }} | {{ selectedColor.name }}
+                </p>
+                <p class="text-sm font-medium">
+                  ៛{{ formatPrice(currentProduct.price * quantity) }}
+                </p>
+              </div>
+            </div>
+
+            <div class="border-t pt-4">
+              <div class="flex justify-between mb-2">
+                <span class="text-gray-600">Subtotal</span>
+                <span class="font-medium"
+                  >៛{{ formatPrice(currentProduct.price * quantity) }}</span
+                >
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600">Shipping</span>
+                <span class="font-medium text-green-600">Free</span>
+              </div>
+            </div>
+
+            <div class="border-t pt-4 flex justify-between">
+              <span class="text-gray-600">Total</span>
+              <span class="font-bold text-lg"
                 >៛{{ formatPrice(currentProduct.price * quantity) }}</span
               >
             </div>
-            <div class="flex justify-between">
-              <span class="text-gray-600">Shipping</span>
-              <span class="font-medium">Free</span>
-            </div>
           </div>
 
-          <div class="border-t pt-4 flex justify-between">
-            <span class="text-gray-600">Total</span>
-            <span class="font-bold"
-              >៛{{ formatPrice(currentProduct.price * quantity) }}</span
-            >
+          <div class="mt-6 flex flex-col space-y-3">
+            <!-- <button
+              @click="goToCart"
+              class="w-full py-2 bg-black text-white rounded hover:bg-gray-800 transition-colors">
+              View Cart
+            </button>
+            <button
+              @click="continueShopping"
+              class="w-full py-2 border border-gray-300 rounded hover:bg-gray-100 transition-colors">
+              Continue Shopping
+            </button> -->
+            <button
+              @click="sendMessage"
+              class="w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors">
+              Send to Telegram
+            </button>
+            <p
+              v-if="status"
+              class="mt-4 text-center px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-300 shadow-sm"
+              :class="
+                status.includes(
+                  'now ypu order successfully please thank you and good luck!!'
+                )
+                  ? 'bg-green-100 text-green-800 border border-green-300'
+                  : 'bg-red-100 text-red-800 border border-red-300'
+              ">
+              {{ status }}
+            </p>
           </div>
-        </div>
-
-        <div class="mt-6 flex flex-col space-y-3">
-          <button
-            @click="goToCart"
-            class="w-full py-2 bg-black text-white rounded hover:bg-gray-800">
-            View Cart
-          </button>
-          <button
-            @click="continueShopping"
-            class="w-full py-2 border border-gray-300 rounded hover:bg-gray-100">
-            Continue Shopping
-          </button>
         </div>
       </div>
-    </div>
+    </Teleport>
   </div>
 </template>
 
 <script>
 import { ref, computed, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { ChevronDownIcon, StarIcon, HeartIcon, EyeIcon } from "lucide-vue-next";
+import {
+  ChevronDownIcon,
+  StarIcon,
+  HeartIcon,
+  EyeIcon,
+  MinusIcon,
+  PlusIcon,
+  ShoppingCartIcon,
+} from "lucide-vue-next";
 import Swal from "sweetalert2";
 import navbar from "../components/navbar.vue";
 import SizeGuide from "./Size_Guide_Modal.vue";
 
 export default {
+  name: "ProductPage",
   components: {
     navbar,
     ChevronDownIcon,
     StarIcon,
     HeartIcon,
     EyeIcon,
+    MinusIcon,
+    PlusIcon,
     SizeGuide,
   },
   setup() {
@@ -403,35 +461,108 @@ export default {
     const category = route.query.category;
 
     // Component state
-    const loading = ref(true);
+    const loading = ref(false);
     const error = ref("");
     const showCartModal = ref(false);
     const showAuthModal = ref(false);
+    const showSizeGuide = ref(false);
     const isLoggedIn = ref(false);
+    const status = ref("");
+    const user = ref(null);
 
     // Product data
-    const currentProduct = ref({});
-    const similarProducts = ref([]);
+    const currentProduct = ref({
+      pro_id: "DEMO001",
+      productName: "Premium Cotton T-Shirt",
+      price: 25000,
+      description:
+        "High-quality cotton t-shirt with comfortable fit and durable construction. Perfect for everyday wear with a modern cut that flatters all body types.",
+      category: "Clothing",
+      rating: 4.5,
+      reviewCount: 128,
+      thumbnail:
+        "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=600&h=600&fit=crop",
+      stock: 15,
+      length: "Regular fit - see size guide",
+    });
+
+    const similarProducts = ref([
+      {
+        pro_id: "DEMO002",
+        productName: "Classic Polo Shirt",
+        price: 35000,
+        category: "Clothing",
+        rating: 4.3,
+        product_viewers: 89,
+        thumbnail:
+          "https://images.unsplash.com/photo-1586790170083-2f9ceadc732d?w=400&h=400&fit=crop",
+        isFavorite: false,
+      },
+      {
+        pro_id: "DEMO003",
+        productName: "Casual Hoodie",
+        price: 45000,
+        category: "Clothing",
+        rating: 4.7,
+        product_viewers: 156,
+        thumbnail:
+          "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=400&h=400&fit=crop",
+        isFavorite: false,
+      },
+      {
+        pro_id: "DEMO004",
+        productName: "Denim Jacket",
+        price: 65000,
+        category: "Clothing",
+        rating: 4.4,
+        product_viewers: 203,
+        thumbnail:
+          "https://images.unsplash.com/photo-1551537482-f2075a1d41f2?w=400&h=400&fit=crop",
+        isFavorite: true,
+      },
+      {
+        pro_id: "DEMO005",
+        productName: "Sport Shorts",
+        price: 28000,
+        category: "Clothing",
+        rating: 4.2,
+        product_viewers: 67,
+        thumbnail:
+          "https://images.unsplash.com/photo-1591195853828-11db59a44f6b?w=400&h=400&fit=crop",
+        isFavorite: false,
+      },
+    ]);
+
     const selectedImage = ref("");
     const selectedSize = ref("M");
     const selectedColor = ref({ name: "Black", value: "#000000" });
     const quantity = ref(1);
     const openDetails = ref(["Description"]);
+    const responseMessage = ref("");
+
+    // Example order data
+    const order = ref({
+      phone_number: "",
+      name: "nam tola",
+      product: "",
+      color: "",
+      size: "",
+      quantity:"" ,
+      price: "",
+      subtotal: "",
+      shipping: "",
+      total: "",
+    });
 
     // Available options
     const availableSizes = ref(["XS", "S", "M", "L", "XL", "XXL"]);
     const availableColors = ref([
-      // 1. Essential Neutrals (3 colors)
-      { name: "Pure White", value: "#FFFFFF" }, // For backgrounds
-      { name: "Deep Black", value: "#000000" }, // For text and accents
-      { name: "Warm Gray", value: "#6B7280" }, // Secondary text
-
-      // 2. Core Brand Color (1 color)
-      { name: "Asale Red", value: "#E11D48" }, // Primary brand color (for CTAs/sales)
-
-      // 3. Complementary Accents (3 colors)
-      { name: "Ocean Blue", value: "#0284C7" }, // Cool contrast to red
-      { name: "Mustard Yellow", value: "#F59E0B" }, // Vibrant accent
+      { name: "Pure White", value: "#FFFFFF" },
+      { name: "Deep Black", value: "#000000" },
+      { name: "Warm Gray", value: "#6B7280" },
+      { name: "Asale Red", value: "#E11D48" },
+      { name: "Ocean Blue", value: "#0284C7" },
+      { name: "Mustard Yellow", value: "#F59E0B" },
       { name: "Forest Green", value: "#15803D" },
     ]);
 
@@ -443,27 +574,40 @@ export default {
       { title: "Description" },
     ];
 
+    // Computed properties
     const productImages = computed(() => {
       if (currentProduct.value.thumbnail) {
         const mainImage = getImageUrl(currentProduct.value.thumbnail);
         return [mainImage, mainImage, mainImage, mainImage];
       }
       return [
-        "https://via.placeholder.com/600x600/f3f4f6/9ca3af?text=No+Image",
+        "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=600&h=600&fit=crop",
       ];
     });
 
+    // Methods
     const formatPrice = (price) => {
       return price?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") || "0";
     };
 
     const getImageUrl = (thumbnail) => {
+      if (thumbnail?.startsWith("http")) {
+        return thumbnail;
+      }
       return `http://localhost/ApplicationBackend/api/${thumbnail}`;
     };
 
     const fetchProduct = async () => {
+      if (!pro_id) {
+        // Demo mode - use default product
+        selectedImage.value = productImages.value[0];
+        return;
+      }
+
       try {
         loading.value = true;
+        error.value = "";
+
         const response = await fetch(
           `http://localhost/ApplicationBackend/api/middleware/api_fetch_product_id.php?pro_id=${pro_id}`
         );
@@ -480,15 +624,16 @@ export default {
         }
       } catch (err) {
         error.value = err.message;
+        console.error("Fetch product error:", err);
       } finally {
         loading.value = false;
       }
     };
 
     const fetchSimilarProducts = async () => {
-      try {
-        if (!category) return;
+      if (!category) return;
 
+      try {
         const response = await fetch(
           `http://localhost/ApplicationBackend/api/middleware/api_fecth_category.php?category=${category}`
         );
@@ -516,8 +661,9 @@ export default {
           }
         );
         const data = await response.json();
-        isLoggedIn.value = data.authenticated;
-        return data.authenticated;
+        const authenticated = data.logged_in === true;
+        isLoggedIn.value = authenticated;
+        return authenticated;
       } catch (error) {
         console.error("Auth check failed:", error);
         isLoggedIn.value = false;
@@ -525,7 +671,7 @@ export default {
       }
     };
 
-    const handleAddToCart = async () => {
+    const handleAddToCart = async (pro_id) => {
       const isAuthenticated = await checkAuthStatus();
 
       if (!isAuthenticated) {
@@ -538,6 +684,8 @@ export default {
 
     const addToCart = async () => {
       try {
+        loading.value = true;
+
         const response = await fetch(
           "http://localhost/ApplicationBackend/api/middleware/add_to_cart.php",
           {
@@ -551,13 +699,14 @@ export default {
               quantity: quantity.value,
               size: selectedSize.value,
               color: selectedColor.value.name,
+              pro_id: currentProduct.value.pro_id,
             }),
           }
         );
 
         const result = await response.json();
-
-        if (result.success) {
+        console.log(result);
+        if (result) {
           showCartModal.value = true;
         } else {
           Swal.fire({
@@ -573,6 +722,8 @@ export default {
           title: "Error",
           text: "Failed to add item to cart",
         });
+      } finally {
+        loading.value = false;
       }
     };
 
@@ -586,13 +737,14 @@ export default {
     };
 
     const increaseQuantity = () => {
-      if (quantity.value < (currentProduct.value.stock || 10)) {
+      const maxStock = currentProduct.value.stock || 10;
+      if (quantity.value < maxStock) {
         quantity.value++;
       } else {
         Swal.fire({
-          icon: "error",
-          title: "Out of Stock",
-          text: "This item is currently out of stock.",
+          icon: "warning",
+          title: "Stock Limit Reached",
+          text: `Maximum available quantity is ${maxStock}`,
           confirmButtonText: "OK",
         });
       }
@@ -622,9 +774,17 @@ export default {
     };
 
     const goToLogin = () => {
-      router.push("/AuthView");
+      router.push({
+        path: "/AuthView",
+        query: { page: "card" },
+      });
       showAuthModal.value = false;
     };
+
+    // const goToLogin = () => {
+    //   router.push("/AuthView");
+    //   showAuthModal.value = false;
+    // };
 
     const goToRegister = () => {
       router.push("/Registration");
@@ -642,9 +802,88 @@ export default {
 
     const handleImageError = (event) => {
       event.target.src =
-        "https://via.placeholder.com/400x400/f3f4f6/9ca3af?text=No+Image";
+        "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&h=400&fit=crop";
     };
 
+    onMounted(async () => {
+      try {
+        const res = await fetch(
+          "http://localhost/ApplicationBackend/api/middleware/get_profile_user.php",
+          {
+            method: "GET",
+            credentials: "include", // important! keeps session
+          }
+        );
+        const data = await res.json();
+        //~ debug user
+        // console.log(data);
+        if (data) {
+          user.value = data.user;
+        } else {
+          console.warn("Not logged in");
+        }
+      } catch (err) {
+        console.error("Fetch user failed", err);
+      }
+    });
+
+    const sendMessage = async () => {
+      if (!currentProduct.value) return;
+
+      const messageData = {
+        order: "New Order Added to Cart",
+        user:
+          `${user.value?.First_name || ""} ${
+            user.value?.Last_name || ""
+          }`.trim() || "Guest",
+        phone: user.value?.Phone_number || "N/A",
+        product: currentProduct.value.productName,
+        color: selectedColor.value?.name || "N/A",
+        size: selectedSize.value || "N/A",
+        quantity: quantity.value || 1,
+        code: currentProduct.value.pro_id || null,
+        price: `៛${formatPrice(currentProduct.value.price)}`,
+        subtotal: `៛${formatPrice(
+          currentProduct.value.price * quantity.value
+        )}`,
+        shipping: "Free",
+        total: `៛${formatPrice(currentProduct.value.price * quantity.value)}`,
+      };
+      //! debug data
+      // console.log(messageData);
+
+      try {
+        const response = await fetch(
+          "http://localhost/ApplicationBackend/api/middleware/config.php",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(messageData),
+          }
+        );
+
+        const data = await response.json();
+        console.log(data);
+
+        if (data.ok) {
+          Swal.fire({
+            title: "Order Successfully!!",
+            icon: "success",
+            draggable: true,
+          });
+          status.value =
+            "now ypu order successfully please thank you and good luck!!";
+          setTimeout(() => (status.value = ""), 3000);
+        } else {
+          status.value = `Failed to send ❌: ${data.description || data.error}`;
+        }
+      } catch (error) {
+        status.value = "Error: " + error.message;
+        console.error("Telegram send error:", error);
+      }
+    };
+
+    // Lifecycle
     onMounted(() => {
       fetchProduct();
       fetchSimilarProducts();
@@ -652,10 +891,15 @@ export default {
     });
 
     return {
+      // State
       loading,
       error,
       showCartModal,
       showAuthModal,
+      showSizeGuide,
+      status,
+
+      // Product data
       currentProduct,
       similarProducts,
       selectedImage,
@@ -663,10 +907,14 @@ export default {
       selectedColor,
       quantity,
       openDetails,
+
+      // Options
       availableSizes,
       availableColors,
       productDetails,
       productImages,
+
+      // Methods
       formatPrice,
       getImageUrl,
       fetchProduct,
@@ -681,6 +929,7 @@ export default {
       continueShopping,
       goToLogin,
       goToRegister,
+      sendMessage,
     };
   },
 };
@@ -715,5 +964,141 @@ export default {
 
 .aspect-square {
   aspect-ratio: 1/1;
+}
+
+/* Loading spinner animation */
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+/* Hover effects */
+.group:hover .group-hover\:scale-105 {
+  transform: scale(1.05);
+}
+
+.group:hover .group-hover\:text-red-400 {
+  color: #f87171;
+}
+
+/* Transition improvements */
+.transition-colors {
+  transition-property: color, background-color, border-color;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+.transition-all {
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 300ms;
+}
+
+.transition-transform {
+  transition-property: transform;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 200ms;
+}
+
+/* Custom scrollbar for modals */
+.modal-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.modal-content::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.modal-content::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+
+.modal-content::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Focus states for accessibility */
+button:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* Improved button states */
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Color picker improvements */
+.w-8.h-8.rounded-full {
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+}
+
+.w-8.h-8.rounded-full:hover {
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.2),
+    0 0 0 2px rgba(59, 130, 246, 0.5);
+}
+
+/* Rating stars */
+.fill-current {
+  fill: currentColor;
+}
+
+/* Responsive improvements */
+@media (max-width: 640px) {
+  .grid-cols-6 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .aspect-square {
+    aspect-ratio: 1/1;
+  }
+
+  .text-2xl {
+    font-size: 1.5rem;
+    line-height: 2rem;
+  }
+}
+
+/* Modal backdrop blur effect */
+.fixed.inset-0.bg-black.bg-opacity-50 {
+  backdrop-filter: blur(2px);
+}
+
+/* Product card hover effects */
+.hover\:-translate-y-1:hover {
+  transform: translateY(-0.25rem);
+}
+
+/* Smooth color transitions for color picker */
+.rounded-full.border-2.transition-all {
+  transition: all 0.2s ease-in-out;
+}
+
+/* Image loading placeholder */
+img[src=""],
+img:not([src]) {
+  background: linear-gradient(90deg, #f0f0f0 25%, transparent 37%, #f0f0f0 63%);
+  background-size: 400% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 </style>

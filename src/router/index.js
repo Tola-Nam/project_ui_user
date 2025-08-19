@@ -13,6 +13,7 @@ import check_out from "/src/views/mod/AuthModal.vue"; // Assuming you have a che
 import categories from "../views/categories/cate_demo.vue";
 import category_detail from "../views/categories/cate_detail.vue";
 import add_favorite from "../views/categories/add_favorite.vue";
+import SearchResults from "../views/categories/SearchResults.vue";
 const routes = [
   { path: "/", name: "homePage", component: homePage },
   { path: "/card", name: "card", component: card },
@@ -34,6 +35,7 @@ const routes = [
     name: "category-detail",
     component: category_detail,
   },
+  { path: "/SearchResults", name: "SearchResults", component: SearchResults },
   { path: "/footer", name: "footer", component: footer },
 ];
 

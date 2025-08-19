@@ -161,7 +161,7 @@
           <div class="relative">
             <img
               class="mx-auto h-32 w-32 sm:h-40 sm:w-40 rounded-full border-4 border-white shadow-lg"
-              src=""
+              src="/public/fishingLogo.png"
               alt="App Logo" />
           </div>
           <h3 class="mt-6 text-xl font-bold text-white animate-fade-in">
@@ -178,11 +178,11 @@
 
 <script setup>
 import { ref } from "vue";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import { EyeIcon, EyeOffIcon } from "lucide-vue-next";
 
 const router = useRouter();
-
+const route = useRoute();
 const form = ref({
   phone_number: "", // Changed from Phone_number to phone_number
   password: "",
@@ -225,9 +225,15 @@ const handleLogin = async () => {
 
     // Session logic
     sessionStorage.setItem("isAuthenticated", "true");
-    sessionStorage.setItem("userPhone", form.value.Phone_number);
+    sessionStorage.setItem("userPhone", form.value.phone_number);
+    sessionStorage.setItem("password", form.value.password);
 
-    router.push("/");
+    if (route.path === "/categories" || route.query.page === "categories") {
+      router.replace("/categories");
+    } else {
+      router.replace("/");
+    }
+    // router.push("/");
   } catch (error) {
     errorMessage.value = error.message || "Login failed";
   } finally {

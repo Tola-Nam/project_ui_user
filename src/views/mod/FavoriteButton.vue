@@ -11,6 +11,7 @@
         'text-gray-500 group-hover:text-red-400': !item.isFavorite,
       }" />
     <span v-if="isProcessing" class="sr-only">Processing...</span>
+    <span v-else class="sr-only text-green-400">Add Successfully!!</span>
   </button>
 </template>
 

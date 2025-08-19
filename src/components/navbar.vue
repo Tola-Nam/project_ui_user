@@ -4,19 +4,19 @@
       <div class="flex justify-between items-center h-16">
         <!-- Logo Section -->
         <div class="flex items-center">
-          <div class="flex items-center space-x-2">
+          <router-link to="/" class="flex items-center space-x-2">
             <div class="relative w-8 h-8 rounded-full overflow-hidden">
               <div
                 class="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600"></div>
               <img
-                src="https://thumbs.dreamstime.com/b/lets-shopping-logo-design-template-shop-icon-135610500.jpg"
-                alt="Shop Logo"
+                src="/public/fishingLogo.png"
+                alt="ShopLogo"
                 class="absolute inset-0 w-full h-full object-cover opacity-80" />
             </div>
             <span class="text-sm font-bold italic text-center rainbow-animate"
               >Let's Shop</span
             >
-          </div>
+          </router-link>
         </div>
 
         <!-- Navigation -->
@@ -93,9 +93,19 @@
 
               <!-- Username and Role -->
               <div class="hidden sm:block text-left">
-                <div class="text-sm font-medium text-gray-900">
-                  {{ user.First_name || "Guest" }} {{ user.last_name || "" }}
+                <div
+                  class="text-sm font-medium text-gray-900 uppercase flex items-center">
+                  <span>
+                    {{
+                      (
+                        (user?.First_name || "") +
+                        " " +
+                        (user?.last_name || "")
+                      ).trim() || "Guest"
+                    }}
+                  </span>
                 </div>
+
                 <div class="text-xs text-gray-500">
                   {{ user.phone_number || "Not logged in" }}
                 </div>
@@ -129,10 +139,23 @@
                       :alt="user.name"
                       class="w-10 h-10 rounded-full object-cover" />
                     <div>
-                      <div class="font-sm m-0 text-gray-900">
-                        {{ user.First_name || "Guest" }}
-                        {{ user.last_name || "" }}
+                      <div
+                        class="text-sm font-medium text-gray-600 flex items-center uppercase">
+                        <span class="text-gray-600">
+                          {{
+                            (
+                              (user.First_name
+                                ? user.First_name.toUpperCase()
+                                : "") +
+                              " " +
+                              (user.last_name
+                                ? user.last_name.toUpperCase()
+                                : "")
+                            ).trim() || "Guest"
+                          }}
+                        </span>
                       </div>
+
                       <div class="text-xs text-blue-600 font-medium">
                         {{ user.phone_number || "Guest user" }}
                       </div>
@@ -299,13 +322,12 @@ import {
   Mail,
 } from "lucide-vue-next";
 import { ref, computed, onMounted, onUnmounted } from "vue";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 
 const router = useRouter();
-
+const route = useRoute();
 // Constants
-const defaultAvatar =
-  "https://www.pawlovetreats.com/cdn/shop/articles/pembroke-welsh-corgi-puppy_1000x.jpg?v=1628638716";
+const defaultAvatar = "/src/assets/default_avatar.png";
 
 // Refs
 const isDropdownOpen = ref(false);
@@ -317,7 +339,8 @@ const errorMessage = ref("");
 const lastActiveTime = ref(new Date());
 const isOnline = ref(navigator.onLine);
 
-// Data
+//~ Data for mak categories detail route
+
 const categories = ref([
   { id: 1, name: "FishingClothing" },
   { id: 2, name: "FishingChairs" },
@@ -360,6 +383,7 @@ const checkActivity = () => {
     isOnline.value = false;
   }
 };
+//& toggle for menu
 
 const toggleProfileMenu = () => {
   isProfileMenuOpen.value = !isProfileMenuOpen.value;
@@ -376,6 +400,7 @@ const toggleMobileMenu = () => {
     lastActiveTime.value = new Date();
   }
 };
+//?  this function use for get data user to show in profile account
 
 const fetchUserData = async () => {
   isLoading.value = true;
@@ -387,9 +412,7 @@ const fetchUserData = async () => {
       {
         method: "GET",
         credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
       }
     );
 
@@ -399,20 +422,18 @@ const fetchUserData = async () => {
 
     const responseData = await response.json();
 
-    if (responseData && responseData.logged_in) {
-      const userData = responseData.user;
+    if (responseData && responseData.user) {
       user.value = {
-        First_name: userData.First_name || "",
-        last_name: userData.Last_name || "",
-        phone_number: userData.Phone_number || "",
-        avatar: userData.avatar || defaultAvatar,
+        First_name: responseData.user.First_name || "",
+        last_name: responseData.user.Last_name || "",
+        phone_number: responseData.user.Phone_number || "",
+        avatar: responseData.user.Profile_image || defaultAvatar,
       };
     } else {
-      // User is not logged in, set to guest
+      // Guest user fallback
       user.value = {
-        First_name: "null",
+        First_name: "Guest",
         last_name: "",
-        email: "",
         phone_number: "",
         avatar: defaultAvatar,
       };
@@ -420,11 +441,9 @@ const fetchUserData = async () => {
   } catch (error) {
     console.error("Error fetching user data:", error);
     errorMessage.value = error.message;
-    // Set to guest if there's an error
     user.value = {
       First_name: "Guest",
       last_name: "",
-      email: "",
       phone_number: "",
       avatar: defaultAvatar,
     };
@@ -432,6 +451,7 @@ const fetchUserData = async () => {
     isLoading.value = false;
   }
 };
+//^ use for logout account user
 
 const handleLogout = async () => {
   try {
@@ -465,7 +485,23 @@ const handleLogout = async () => {
       avatar: defaultAvatar,
     };
 
-    router.push("/AuthView");
+    // Only redirect once on mount
+    if (route.path === "/categories") {
+      router.replace({
+        path: "/AuthView",
+        query: { page: "categories" },
+      });
+    } else if (route.path === "/card") {
+      router.replace({ path: "/AuthView" });
+    } else {
+      router.replace({ path: "/AuthView" });
+    }
+    // router.push({
+    //   path: "/AuthView",
+    //   query: { page: "categories" },
+    // });
+
+    // router.push("/AuthView");
   } catch (error) {
     console.error("Logout failed:", error);
     errorMessage.value = error.message || "Logout failed. Please try again.";
@@ -482,33 +518,36 @@ const handleClickOutside = (event) => {
   }
 };
 
-// Lifecycle Hooks
-onMounted(async () => {
-  try {
-    await fetchUserData();
+//* Lifecycle Hooks use for check user that online or offline
 
-    window.addEventListener("online", updateNetworkStatus);
-    window.addEventListener("offline", updateNetworkStatus);
-    document.addEventListener("click", handleClickOutside);
+onMounted(() => {
+  // Setup unmount cleanup first
+  let activityCheckInterval;
 
-    // Setup activity checker
-    const activityCheckInterval = setInterval(() => {
-      checkActivity();
-      if (isOnline.value) {
-        lastActiveTime.value = new Date();
-      }
-    }, 30000);
+  onUnmounted(() => {
+    window.removeEventListener("online", updateNetworkStatus);
+    window.removeEventListener("offline", updateNetworkStatus);
+    document.removeEventListener("click", handleClickOutside);
+    if (activityCheckInterval) clearInterval(activityCheckInterval);
+  });
 
-    // Cleanup function
-    onUnmounted(() => {
-      window.removeEventListener("online", updateNetworkStatus);
-      window.removeEventListener("offline", updateNetworkStatus);
-      document.removeEventListener("click", handleClickOutside);
-      clearInterval(activityCheckInterval);
-    });
-  } catch (error) {
-    console.error("Component initialization error:", error);
-  }
+  // Now do async work
+  (async () => {
+    try {
+      await fetchUserData();
+
+      window.addEventListener("online", updateNetworkStatus);
+      window.addEventListener("offline", updateNetworkStatus);
+      document.addEventListener("click", handleClickOutside);
+
+      activityCheckInterval = setInterval(() => {
+        checkActivity();
+        if (isOnline.value) lastActiveTime.value = new Date();
+      }, 30000);
+    } catch (error) {
+      console.error("Component initialization error:", error);
+    }
+  })();
 });
 </script>
 

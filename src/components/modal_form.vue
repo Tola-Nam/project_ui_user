@@ -27,22 +27,28 @@
                 required />
 
               <!-- Search Icon -->
-              <span
-                class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none me-6">
-                <SearchIcon class="w-5 h-5" />
-              </span>
+              <div class="flex flex-row items-center">
+                <!-- Search Button -->
+                <button
+                  @click="submitForm"
+                  class="text-gray-400 hover:text-gray-700 focus:outline-none p-2">
+                  <SearchIcon class="w-5 h-5" />
+                </button>
 
-              <!-- Close Button (visible on mobile) -->
-              <button
-                @click="closeModal"
-                class="md:absolute md:top-2 md:right-2 text-gray-600 hover:text-black ml-2 md:ml-0">
-                <span class="hidden sm:inline">✕</span>
-                <span class="sm:hidden">✕</span>
-              </button>
+                <!-- Spacer - creates 10px gap -->
+                <div class="w-2.5"></div>
+
+                <!-- Close Button -->
+                <button
+                  @click="closeModal"
+                  class="text-gray-600 hover:text-black p-2">
+                  <span class="hidden sm:inline">✕</span>
+                  <span class="sm:hidden">✕</span>
+                </button>
+              </div>
             </div>
             <hr class="w-full border-t border-gray-300 my-2" />
           </div>
-
           <div class="flex justify-end">
             <button type="submit" class="sr-only">Submit</button>
           </div>
@@ -54,11 +60,12 @@
 
 <script setup>
 import { ref } from "vue";
+import { useRouter } from "vue-router";
+import { SearchIcon } from "lucide-vue-next";
 
+const router = useRouter();
 const isModalOpen = ref(false);
-const form = ref({
-  name: "",
-});
+const form = ref({ name: "" });
 
 const openModal = () => {
   isModalOpen.value = true;
@@ -69,7 +76,11 @@ const closeModal = () => {
 };
 
 const submitForm = () => {
-  console.log("Submitted name:", form.value.name);
+  const query = form.value.name.trim();
+  if (!query) return;
+
+  // Route to SearchResults page with query parameter
+  router.push({ name: "SearchResults", query: { q: query } });
   closeModal();
 };
 </script>

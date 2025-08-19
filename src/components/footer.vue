@@ -15,28 +15,52 @@
             Your premier destination for high-quality fishing gear and outdoor
             equipment since 2010.
           </p>
-          <div class="flex space-x-4">
+          <div class="flex items-center space-x-4">
+            <!-- Facebook -->
             <a
               href="https://web.facebook.com/?ref=homescreenpwa"
               target="_blank"
-              class="text-gray-400 hover:text-white transition">
+              rel="noopener noreferrer"
+              aria-label="Facebook"
+              class="transition transform hover:scale-110 active:scale-95">
               <Facebook class="w-6 h-6 text-blue-600 hover:text-blue-800" />
             </a>
+
+            <!-- Instagram -->
             <a
               href="https://www.instagram.com/"
               target="_blank"
-              class="text-gray-400 hover:text-white transition">
+              rel="noopener noreferrer"
+              aria-label="Instagram"
+              class="transition transform hover:scale-110 active:scale-95">
               <Instagram class="w-6 h-6 text-pink-500 hover:text-pink-700" />
             </a>
-            <a href="#" class="text-gray-400 hover:text-white transition">
-              <X
-                class="w-6 h-6 text-gray-500 hover:text-red-500 cursor-pointer" />
+
+            <!-- X / Twitter -->
+            <a
+              href="#"
+              aria-label="Twitter / X"
+              class="transition transform hover:scale-110 active:scale-95">
+              <X class="w-6 h-6 text-gray-500 hover:text-gray-700" />
             </a>
 
-            <!-- Create Post (What's Up) -->
-            <router-link to="/Registration" class="icon-link highlight">
+            <!-- Create Post -->
+            <router-link
+              to="/Registration"
+              aria-label="Create Post"
+              class="transition transform hover:scale-110 active:scale-95 text-indigo-600 hover:text-indigo-800">
               <LucidePlusCircle :size="28" />
             </router-link>
+
+            <!-- ABA Payment -->
+            <a
+              href="https://pay.ababank.com/hoRgRUc2gWweWdUPA"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Pay with ABA Bank"
+              class="transition transform hover:scale-110 active:scale-95 text-indigo-600 hover:text-indigo-800">
+              <span class="text-2xl">💳</span>
+            </a>
           </div>
         </div>
 
